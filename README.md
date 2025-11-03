@@ -1,40 +1,37 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+Task Management Dashboard
 
-## Getting Started
+### Overview
+This project aims to create a task manager for users. Users can create task, sort and filter the task, edit, and delete task. It also has charts for data visualization such as Pie Chart and Bar Chart. You can also overview your future tasks in Calendar feature that depends on the due date you provide. It has a feature of adding assignee so each tasks are tightly coupled to each assignee.
 
-First, run the development server:
+### Tech Stack and Dependencies
+-NextJS
+-Prisma commands:
+  npx prisma db push - create and push database schema to prisma
+- Jest:
+  npx jest --clearCache
+  npm test/npm run test
+- Redux/RTK
 
-```bash
+### Setup and installation instructions
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+npm run test
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Available scripts
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+### Architecture decisions and trade-offs
+page based routing so its necessary to follow when using NextJS
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+### Future improvements you'd make with more time
+Kanban view of the tasks. The user can drag and drop the task box and the status will change and reflect on the table as well.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+### Time spent on the project
+6 days
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Deployment
+- Chose Vercel for deplying fullstack NextJS app
+- Chose Neon Console for deploying PostgreSQL
 
-## Learn More
+### Helpers:
+Chatgpt & Copilot
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
