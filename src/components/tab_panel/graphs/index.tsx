@@ -7,7 +7,7 @@ import BarChartPanel from "./BarChart";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import TaskCalendar from "./Calendar";
-import { Task } from "@/pages";
+import { Task } from "@/pages/dashboard";
 
 export default function GraphPanel() {
     const { task: taskFromStore, assignee} = useSelector((state: RootState) => state.task)

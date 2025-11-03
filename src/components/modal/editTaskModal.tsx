@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Button, MenuItem, Modal, Select, TextField } from "@mui/material";
 import styles from "../styles";
 import { formattedDate } from "@/helpers/dateFormatter";
-import { Task } from "@/pages";
+import { Task } from "@/pages/dashboard";
 
 type AddTaskModalProps = {
     openEditTaskModal: boolean,

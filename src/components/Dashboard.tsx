@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
-import { Props } from '@/pages';
+import { Props } from '@/pages/dashboard';
 import TablePanel from './tab_panel/TablePanel';
 import GraphPanel from './tab_panel/graphs';
 import { Avatar,  Divider, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, Tooltip } from '@mui/material';

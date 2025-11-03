@@ -1,4 +1,4 @@
-import { Props, Task } from "@/pages";
+import { Props, Task } from "@/pages/dashboard";
 import { Autocomplete, Box, Button, Checkbox, InputLabel, MenuItem, Paper, Select, SelectChangeEvent, Stack, Table, TableBody, TableCell, TableContainer, TablePagination, TableRow, TextField, Typography } from "@mui/material";
 import React, { useEffect, useMemo, useState } from "react";
 import AddTaskModal from "../modal/addTaskModal";

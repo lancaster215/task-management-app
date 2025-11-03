@@ -1,5 +1,5 @@
 import React from 'react';
-import { Task } from "@/pages";
+import { Task } from "@/pages/dashboard";
 import { RootState } from "@/store";
 import { BarChart } from "@mui/x-charts/BarChart";
 import { useSelector } from "react-redux";

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Props, Task } from "@/pages";
+import { Props, Task } from "@/pages/dashboard";
 import { PieChart, pieArcLabelClasses } from "@mui/x-charts/PieChart";
 import { DefaultizedPieValueType, Direction } from "@mui/x-charts";
 import { useSelector } from "react-redux";

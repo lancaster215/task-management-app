@@ -6,7 +6,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
-import { Task } from '@/pages';
+import { Task } from '@/pages/dashboard';
 
 type Props = {
   task: {

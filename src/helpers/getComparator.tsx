@@ -1,6 +1,6 @@
 import { Order } from "@/types/tableTypes";
 import { descendingComparator } from "./descendingComparator";
-import { Task } from "@/pages";
+import { Task } from "@/pages/dashboard";
 
 export function getComparator<Key extends keyof Task | 'action'>(
   order: Order,
