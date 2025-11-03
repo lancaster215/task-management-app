@@ -371,16 +371,16 @@ export default function TablePanel({task: itasks, assignee}: Props) {
                         newUser={newUser}
                         setNewUser={setNewUser}
                     />
-                        <Button
-                            variant="contained" 
-                            color="primary" 
-                            onClick={() => setOpenAddNewAccountModal(!openAddNewAccountModal)}
-                            sx={{
-                                fontSize: "clamp(8px, 1.5vw, 15px)",
-                            }}
-                        >
-                            Add assignee
-                        </Button>
+                    <Button
+                        variant="contained" 
+                        color="primary" 
+                        onClick={() => setOpenAddNewAccountModal(!openAddNewAccountModal)}
+                        sx={{
+                            fontSize: "clamp(8px, 1.5vw, 15px)",
+                        }}
+                    >
+                        Add assignee
+                    </Button>
                     <Typography>Please select Assignee</Typography>
                 </Box>
             </Box>
