@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "postinstall": "prisma generate",
     "dev": "next dev",
-    "build": "npx prisma generate && npx prisma db push && next build",
+    "build": "npx prisma db push && next build",
     "start": "next start",
     "lint": "next lint",
     "test": "jest"
@@ -53,5 +54,8 @@
     "typescript": "^5",
     "web-streams-polyfill": "^4.2.0",
     "whatwg-fetch": "^3.6.20"
+  },
+  "prisma": {
+    "schema": "prisma/schema.prisma"
   }
 }
