@@ -1,4 +1,4 @@
-import { Avatar, Box, Divider, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, Paper, Table, TableBody, TableCell, TableContainer, TablePagination, TableRow, Tooltip } from "@mui/material"
+import { Avatar, Box, Button, Divider, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, Paper, Table, TableBody, TableCell, TableContainer, TablePagination, TableRow, Tooltip, Typography } from "@mui/material"
 import AddNewAccountModal from "../modal/addNewAccount"
 import React, { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
@@ -31,12 +31,19 @@ export default function AssigneeTable() {
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [page, setPage] = useState(0);
     const [assigneeId, setAssigneeId] = useState<string>(assignee.id);
+    const [errorFetchingUser, setErrorFetchingUser] = useState<boolean>(false)
 
     useEffect(() => {
         const fetchAssignees = async () => {
-            const res = await fetch(`${BASE_URL}/api/users`);
-            const latestUserAssignee = await res.json();
-            setUserAssignee(latestUserAssignee);
+            try {
+                const res = await fetch(`${BASE_URL}/api/users`);
+                const latestUserAssignee = await res.json();
+                setUserAssignee(latestUserAssignee);
+            } catch(err){
+                setErrorFetchingUser(true)
+                console.log('Error', err)
+            }
+            
         };
 
         fetchAssignees();
@@ -111,7 +118,7 @@ export default function AssigneeTable() {
                     setNewUser={setNewUser}
                 />
                 <Box sx={{justifyContent: 'space-between', display: 'flex'}}>
-                    <ArrowBackIcon onClick={() => router.push('/')} sx={{cursor: 'pointer'}}/>
+                    <ArrowBackIcon onClick={() => router.push('/dashboard')} sx={{cursor: 'pointer'}}/>
                     <Tooltip title="All Tasks">
                         <IconButton
                             onClick={handleClickAnchor}
@@ -176,64 +183,78 @@ export default function AssigneeTable() {
                         </MenuItem>
                     </Menu>
                 </Box>
-                <Paper sx={{ marginTop: '10px', padding: 2, maxWidth: '100%' }}>
-                    <TableContainer>
-                        <Table
-                            sx={{ minWidth: 750 }}
-                            aria-labelledby="tableTitle"
-                            size={'small'}
-                        >
-                            <EnhancedTableHead
-                                order={order}
-                                orderBy={orderBy}
-                                onRequestSort={handleRequestSort}
-                                rowCount={5}
-                                header="user"
-                            />
-                            {/* <Divider sx={{mt: 1}} /> */}
-                            <TableBody>
-                                {userAssignee.map((assignee, id) => {
-                                    return (
-                                        <TableRow
-                                            hover
-                                            onClick={(event) => handleClick(assignee.name, assignee.id)}
-                                            role="checkbox"
-                                            // aria-checked={isItemSelected}
-                                            tabIndex={-1}
-                                            key={id}
-                                            // selected={isItemSelected}
-                                            sx={{ cursor: 'pointer'}}
-                                        >
-                                            <TableCell
-                                                component="th"
-                                                id={assignee.name}
-                                                scope="row"
-                                                padding="none"
-                                                sx={{
-                                                    fontSize: "clamp(10px, 1.5vw, 16px)", 
-                                                    backgroundColor: assignee.id === assigneeId ? '#1976d2': undefined,
-                                                    color: assignee.id === assigneeId ? '#ffffff' : undefined,
-                                                    p: 1
-                                                }}
+                {errorFetchingUser ? <>
+                    <Button
+                        variant="contained" 
+                        color="primary" 
+                        onClick={() => setOpenAddNewAccountModal(!openAddNewAccountModal)}
+                        sx={{
+                            fontSize: "clamp(8px, 1.5vw, 15px)",
+                        }}
+                    >
+                        Add assignee
+                    </Button>
+                    <Typography>Please select Assignee</Typography>
+                </> :
+                    <Paper sx={{ marginTop: '10px', padding: 2, maxWidth: '100%' }}>
+                        <TableContainer>
+                            <Table
+                                sx={{ minWidth: 750 }}
+                                aria-labelledby="tableTitle"
+                                size={'small'}
+                            >
+                                <EnhancedTableHead
+                                    order={order}
+                                    orderBy={orderBy}
+                                    onRequestSort={handleRequestSort}
+                                    rowCount={5}
+                                    header="user"
+                                />
+                                {/* <Divider sx={{mt: 1}} /> */}
+                                <TableBody>
+                                    {userAssignee.map((assignee, id) => {
+                                        return (
+                                            <TableRow
+                                                hover
+                                                onClick={(event) => handleClick(assignee.name, assignee.id)}
+                                                role="checkbox"
+                                                // aria-checked={isItemSelected}
+                                                tabIndex={-1}
+                                                key={id}
+                                                // selected={isItemSelected}
+                                                sx={{ cursor: 'pointer'}}
                                             >
-                                                {assignee.name}
-                                            </TableCell>
-                                        </TableRow>
-                                    )
-                                })}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                    <TablePagination
-                        rowsPerPageOptions={[5, 10, 25]}
-                        component="div"
-                        count={userAssignee.length}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        onPageChange={handleChangePage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                    />
-                </Paper>
+                                                <TableCell
+                                                    component="th"
+                                                    id={assignee.name}
+                                                    scope="row"
+                                                    padding="none"
+                                                    sx={{
+                                                        fontSize: "clamp(10px, 1.5vw, 16px)", 
+                                                        backgroundColor: assignee.id === assigneeId ? '#1976d2': undefined,
+                                                        color: assignee.id === assigneeId ? '#ffffff' : undefined,
+                                                        p: 1
+                                                    }}
+                                                >
+                                                    {assignee.name}
+                                                </TableCell>
+                                            </TableRow>
+                                        )
+                                    })}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                        <TablePagination
+                            rowsPerPageOptions={[5, 10, 25]}
+                            component="div"
+                            count={userAssignee.length}
+                            rowsPerPage={rowsPerPage}
+                            page={page}
+                            onPageChange={handleChangePage}
+                            onRowsPerPageChange={handleChangeRowsPerPage}
+                        />
+                    </Paper>
+                }
             </Box>
         </Box>
     )
