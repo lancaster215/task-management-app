@@ -37,12 +37,14 @@ export const getServerSideProps = async () => {
   const res = await fetch(`${BASE_URL}/api/task`);
   const assigneeRes = await fetch((`${BASE_URL}/api/users`))
 
-  if (!res.ok) {
+  if (!res.ok || !assigneeRes.ok ) {
     const errorText = await res.text();
     console.error("API Error Response:", errorText);
-    return;
+    return { 
+      props: { task: [], assignee: { id: '', name: 'Error' } },
+    };
   }
-  const task: Task = await res.json();
+  const task: Task[] = await res.json();
   const assignee: Assignee = await assigneeRes.json()
 
   return {
