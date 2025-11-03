@@ -302,7 +302,7 @@ export default function TablePanel({task: itasks, assignee}: Props) {
                 id: uuidv4(),
                 name: newUser.name,
             }
-            const addUserResponse = await fetch(`${BASE_URL}/addUser`, {
+            const addUserResponse = await fetch(`${BASE_URL}/api/addUser`, {
                 method: 'POST',
                 headers: {
                     "Content-Type": 'application/json'

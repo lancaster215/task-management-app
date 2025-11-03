@@ -171,7 +171,7 @@ export default function AssigneeTable() {
                             <Avatar /> <ListItemText>{assignee.name}</ListItemText>
                         </MenuItem> */}
                         <Divider />
-                        <MenuItem onClick={() => router.push('/')}>
+                        <MenuItem onClick={() => router.push('/dashboard')}>
                             <ListItemText>All Tasks</ListItemText>
                         </MenuItem>
                         <Divider />
