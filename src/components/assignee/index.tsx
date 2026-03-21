@@ -8,7 +8,7 @@ import EnhancedTableHead from "../custom_components/EnhancedTableHead";
 import { useDispatch, useSelector } from "react-redux";
 import { setAssignee } from "@/store/taskSlice";
 import { RootState } from "@/store";
-import { User } from "../Dashboard";
+import { User } from "..";
 import { useRouter } from "next/router";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { BASE_URL } from "../constants/baseURL";
@@ -39,15 +39,15 @@ export default function AssigneeTable() {
                 const res = await fetch(`${BASE_URL}/api/users`);
                 const latestUserAssignee = await res.json();
                 setUserAssignee(latestUserAssignee);
-            } catch(err){
+            } catch (err) {
                 setErrorFetchingUser(true)
                 console.log('Error', err)
             }
-            
+
         };
 
         fetchAssignees();
-    },[])
+    }, [])
 
     const handleClickAnchor = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -59,7 +59,7 @@ export default function AssigneeTable() {
     const handleOnSubmit = async (e?: React.FormEvent) => {
         e?.preventDefault();
         try {
-            const payload = { 
+            const payload = {
                 id: uuidv4(),
                 name: newUser.name,
             }
@@ -73,7 +73,7 @@ export default function AssigneeTable() {
             const res = await fetch(`${BASE_URL}/api/users`);
             const latestUserAssignee = await res.json();
             setUserAssignee(latestUserAssignee);
-        } catch(err) {
+        } catch (err) {
             console.error(`Error in adding user: ${err}`)
         }
         setOpenAddNewAccountModal(!openAddNewAccountModal)
@@ -86,8 +86,8 @@ export default function AssigneeTable() {
         const noSortHeaders = ['title', 'description', 'tags', 'dueDate']
         const isAsc = orderBy === property && order === 'asc';
         setOrder(isAsc ? 'desc' : 'asc');
-        
-        if(!noSortHeaders.includes(property)){
+
+        if (!noSortHeaders.includes(property)) {
             setOrderBy(property);
         }
     };
@@ -96,19 +96,19 @@ export default function AssigneeTable() {
         dispatch(setAssignee({ name, id }))
         setAssigneeId(id)
     };
-    
+
     const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
         setPage(newPage);
     };
-    
+
     const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
     }
 
-    return(
+    return (
         <Box sx={{ position: 'relative', justifyContent: 'center', display: 'flex' }}>
-            <Box sx={{ mx: '100px', mt: '10px', maxWidth: '50%'}}>
+            <Box sx={{ mx: '100px', mt: '10px', maxWidth: '50%' }}>
                 <AddNewAccountModal
                     openAddNewAccountModal={openAddNewAccountModal}
                     setOpenAddNewAccountModal={setOpenAddNewAccountModal}
@@ -117,8 +117,8 @@ export default function AssigneeTable() {
                     newUser={newUser}
                     setNewUser={setNewUser}
                 />
-                <Box sx={{justifyContent: 'space-between', display: 'flex'}}>
-                    <ArrowBackIcon onClick={() => router.push('/dashboard')} sx={{cursor: 'pointer'}}/>
+                <Box sx={{ justifyContent: 'space-between', display: 'flex' }}>
+                    <ArrowBackIcon onClick={() => router.push('/dashboard')} sx={{ cursor: 'pointer' }} />
                     <Tooltip title="All Tasks">
                         <IconButton
                             onClick={handleClickAnchor}
@@ -138,35 +138,35 @@ export default function AssigneeTable() {
                         onClick={handleClose}
                         slotProps={{
                             paper: {
-                            elevation: 0,
-                            sx: {
-                                overflow: 'visible',
-                                filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
-                                mt: 1.5,
-                                '& .MuiAvatar-root': {
-                                width: 32,
-                                height: 32,
-                                ml: -0.5,
-                                mr: 1,
+                                elevation: 0,
+                                sx: {
+                                    overflow: 'visible',
+                                    filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                                    mt: 1.5,
+                                    '& .MuiAvatar-root': {
+                                        width: 32,
+                                        height: 32,
+                                        ml: -0.5,
+                                        mr: 1,
+                                    },
+                                    '&::before': {
+                                        content: '""',
+                                        display: 'block',
+                                        position: 'absolute',
+                                        top: 0,
+                                        right: 14,
+                                        width: 10,
+                                        height: 10,
+                                        bgcolor: 'background.paper',
+                                        transform: 'translateY(-50%) rotate(45deg)',
+                                        zIndex: 0,
+                                    },
                                 },
-                                '&::before': {
-                                content: '""',
-                                display: 'block',
-                                position: 'absolute',
-                                top: 0,
-                                right: 14,
-                                width: 10,
-                                height: 10,
-                                bgcolor: 'background.paper',
-                                transform: 'translateY(-50%) rotate(45deg)',
-                                zIndex: 0,
-                                },
-                            },
                             },
                         }}
                         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-                        >
+                    >
                         {/* <MenuItem onClick={handleClose}>
                             <Avatar /> <ListItemText>{assignee.name}</ListItemText>
                         </MenuItem> */}
@@ -185,8 +185,8 @@ export default function AssigneeTable() {
                 </Box>
                 {errorFetchingUser ? <>
                     <Button
-                        variant="contained" 
-                        color="primary" 
+                        variant="contained"
+                        color="primary"
                         onClick={() => setOpenAddNewAccountModal(!openAddNewAccountModal)}
                         sx={{
                             fontSize: "clamp(8px, 1.5vw, 15px)",
@@ -222,7 +222,7 @@ export default function AssigneeTable() {
                                                 tabIndex={-1}
                                                 key={id}
                                                 // selected={isItemSelected}
-                                                sx={{ cursor: 'pointer'}}
+                                                sx={{ cursor: 'pointer' }}
                                             >
                                                 <TableCell
                                                     component="th"
@@ -230,8 +230,8 @@ export default function AssigneeTable() {
                                                     scope="row"
                                                     padding="none"
                                                     sx={{
-                                                        fontSize: "clamp(10px, 1.5vw, 16px)", 
-                                                        backgroundColor: assignee.id === assigneeId ? '#1976d2': undefined,
+                                                        fontSize: "clamp(10px, 1.5vw, 16px)",
+                                                        backgroundColor: assignee.id === assigneeId ? '#1976d2' : undefined,
                                                         color: assignee.id === assigneeId ? '#ffffff' : undefined,
                                                         p: 1
                                                     }}

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Button, Modal, TextField } from "@mui/material";
 import styles from "../styles";
-import { User } from "../Dashboard";
+import { User } from "..";
 
 type DeleteTaskModalProps = {
     openAddNewAccountModal: boolean,
@@ -19,7 +19,7 @@ export default function AddNewAccountModal({ openAddNewAccountModal, setOpenAddN
             onClose={() => setOpenAddNewAccountModal(!openAddNewAccountModal)}
             aria-labelledby="delete-task-modal"
             aria-describedby="deleting-task"
-            sx={{ justifyContent: 'center', display: 'flex', alignItems: 'center'}}
+            sx={{ justifyContent: 'center', display: 'flex', alignItems: 'center' }}
         >
             <Box
                 component="form"

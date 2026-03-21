@@ -13,9 +13,14 @@ This project aims to create a task manager for users. Users can create task, sor
 - Redux/RTK
 
 ### Setup and installation instructions
+Go to Prisma Dashboard, navigate to project settings/connect tab. Copy the connection string with something like postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=public and copy it
+Paste it in .env file DATABASE_URL env variable
+npx generate prisma
+npx prisma migrate dev --name init
 npm install
 npm run dev
 npm run test
+npx prisma studio - to see data and relationships
 
 ### Available scripts
 
