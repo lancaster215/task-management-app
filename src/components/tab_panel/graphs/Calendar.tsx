@@ -36,14 +36,14 @@ export default function TaskCalendar({ task: dataTask, windowWidth }: Props) {
     const { day, ...pickersDayProps } = dayProps;
     const today = dayjs()
     const isDue = day ? dueDates.includes(day.format('YYYY-MM-DD')) : false;
-    
+
     const dueToday = dueDates.find((date) => day.format('YYYY-MM-DD') === date)
 
     const taskTitles = day
       ? task
-          .filter(t => dayjs(t.dueDate).isSame(day, 'day'))
-          .map(t => t.title)
-          .join(', ')
+        .filter(t => dayjs(t.dueDate).isSame(day, 'day'))
+        .map(t => t.title)
+        .join(', ')
       : '';
 
 
@@ -53,16 +53,16 @@ export default function TaskCalendar({ task: dataTask, windowWidth }: Props) {
           {...pickersDayProps}
           day={day}
           sx={{
-            bgcolor: today.format("YYYY-MM-DD") === dueToday ? 
-                '#e5484d' : //due date today
-                (day.format('YYYY-MM-DD') > today.format("YYYY-MM-DD")) && isDue ? 
+            bgcolor: today.format("YYYY-MM-DD") === dueToday ?
+              '#e5484d' : //due date today
+              (day.format('YYYY-MM-DD') > today.format("YYYY-MM-DD")) && isDue ?
                 '#0ac54c' : //due date coming
-                isDue ? 
-                '#a0a0a0' : //due date is overdue
-                day.format('YYYY-MM-DD') === today.format("YYYY-MM-DD") ?
-                '#1565c0' : // today
-                undefined,
-            color: 'white',
+                isDue ?
+                  '#a0a0a0' : //due date is overdue
+                  day.format('YYYY-MM-DD') === today.format("YYYY-MM-DD") ?
+                    '#1565c0' : // today
+                    undefined,
+            color: '#0d1117',
             height: windowWidth <= 375 ? '30px' : undefined,
             width: windowWidth <= 375 ? '30px' : undefined,
             borderRadius: '50%',
@@ -78,34 +78,33 @@ export default function TaskCalendar({ task: dataTask, windowWidth }: Props) {
         views={['day']}
         slots={{ day: Day }}
         sx={{
-            // Make all text white
-            color: 'white',
-            width: windowWidth <= 390 ? '150px' : windowWidth <= 450 ? '190px' : '250px',
-            '& .MuiTypography-root': {
-                color: 'white',
-            },
-            // Month label (November 2025)
-            '& .MuiPickersCalendarHeader-label': {
-                color: 'white',
-                fontSize: "clamp(10px, 1.5vw, 16px)"
-            },
-            // Weekday labels (S, M, T, W, T, F, S)
-            '& .MuiDayCalendar-weekDayLabel': {
-                color: 'white',
-                opacity: 0.8,
-                fontSize: "clamp(10px, 1.5vw, 16px)"
-            },
-            // Arrow buttons (chevrons)
-            '& .MuiPickersArrowSwitcher-button': {
-                color: 'white',
-            },
-            // Calendar container spacing and layout
-            '& .MuiPickersCalendarHeader-root': {
-                justifyContent: 'space-between',
-            },
-            '& .MuiPickersDay-root': {
-                fontSize: "clamp(10px, 1.5vw, 16px)"
-            }
+          color: '#0d1117',
+          width: windowWidth <= 390 ? '150px' : windowWidth <= 450 ? '190px' : '250px',
+          '& .MuiTypography-root': {
+            color: '#0d1117',
+          },
+          // Month label (November 2025)
+          '& .MuiPickersCalendarHeader-label': {
+            color: '#0d1117',
+            fontSize: "clamp(10px, 1.5vw, 16px)"
+          },
+          // Weekday labels (S, M, T, W, T, F, S)
+          '& .MuiDayCalendar-weekDayLabel': {
+            color: '#0d1117',
+            opacity: 0.8,
+            fontSize: "clamp(10px, 1.5vw, 16px)"
+          },
+          // Arrow buttons (chevrons)
+          '& .MuiPickersArrowSwitcher-button': {
+            color: '#0d1117',
+          },
+          // Calendar container spacing and layout
+          '& .MuiPickersCalendarHeader-root': {
+            justifyContent: 'space-between',
+          },
+          '& .MuiPickersDay-root': {
+            fontSize: "clamp(10px, 1.5vw, 16px)"
+          }
         }}
       />
     </LocalizationProvider>

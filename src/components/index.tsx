@@ -9,6 +9,7 @@ import { setAssignee } from '@/store/taskSlice';
 import { BASE_URL } from './constants/baseURL';
 import TabPanel from './tab_panel';
 import SideDrawer from './drawer';
+import AssigneeTable from './modal/selectAssignee';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -50,6 +51,7 @@ export default function Dashboard({ task: task, assignee: preRenderedAssignee }:
     name: '',
   })
   const [openSidebar, setOpenSideBar] = useState(false);
+  const [openAddNewAssignee, setOpenAddNewAssignee] = useState<boolean>(false);
 
   const handleOnSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
@@ -96,6 +98,13 @@ export default function Dashboard({ task: task, assignee: preRenderedAssignee }:
         setNewUser={setNewUser}
       />
 
+      <AssigneeTable
+        openAddNewAssignee={openAddNewAssignee}
+        setOpenAddNewAssignee={setOpenAddNewAssignee}
+        assignee={preRenderedAssignee ?? []}
+        selectedAssignee={fromReduxFromAssignee}
+      />
+
       <Box
         sx={{
           width: '100%',
@@ -114,6 +123,8 @@ export default function Dashboard({ task: task, assignee: preRenderedAssignee }:
           sidebarWidth={SIDEBAR_WIDTH}
           openSidebar={openSidebar}
           setOpenSideBar={setOpenSideBar}
+          openAddNewAssignee={openAddNewAssignee}
+          setOpenAddNewAssignee={setOpenAddNewAssignee}
         />
 
         {/* TABS */}

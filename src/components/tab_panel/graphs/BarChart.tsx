@@ -5,27 +5,27 @@ import { BarChart } from "@mui/x-charts/BarChart";
 import { useSelector } from "react-redux";
 
 type Props = {
-  task: {
-    id: number,
-    name: string,
-    time: string,
-    title: string,
-    description: string,
-    status: string,
-    priority: string,
-    dueDate: string,
-    tags: string,
-    createdAt: string,
-    action: (string | number),
-    assigneeId: string,
-  }[],
-  windowWidth: number,
+    task: {
+        id: number,
+        name: string,
+        time: string,
+        title: string,
+        description: string,
+        status: string,
+        priority: string,
+        dueDate: string,
+        tags: string,
+        createdAt: string,
+        action: (string | number),
+        assigneeId: string,
+    }[],
+    windowWidth: number,
 }
 
 export default function BarChartPanel({ task: dataTask, windowWidth }: Props) {
     const { assignee } = useSelector((state: RootState) => state.task)
     const data = dataTask.filter((task: Task) => task.assigneeId === assignee.id)
-    if(data.length <= 0) {
+    if (data.length <= 0) {
         return
     }
     // Count priorities
@@ -53,16 +53,16 @@ export default function BarChartPanel({ task: dataTask, windowWidth }: Props) {
             width={windowWidth <= 375 ? 300 : 500}
             sx={{
                 "& .MuiChartsLegend-root": {
-                    color: 'white',
+                    color: '#0d1117',
                 },
                 "& .MuiChartsAxis-tickLabel": {
-                    stroke: "white",
+                    stroke: "#0d1117",
                 },
                 "& .MuiChartsAxis-line": {
-                    stroke: "white",
+                    stroke: "#0d1117",
                 },
                 "& .MuiChartsAxis-tick": {
-                    color: "white",
+                    color: "#0d1117",
                 },
             }}
         />

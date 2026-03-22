@@ -1,14 +1,18 @@
 import React from 'react';
-import { Props, Task } from "@/pages/dashboard";
+import { Task } from "@/pages/dashboard";
 import { PieChart, pieArcLabelClasses } from "@mui/x-charts/PieChart";
 import { DefaultizedPieValueType, Direction } from "@mui/x-charts";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 
-export default function PieChartPanel({ task: dataTask }: Props) {
+interface PieChartPanelProps {
+    task: Task[]
+}
+
+export default function PieChartPanel({ task: dataTask }: PieChartPanelProps) {
     const { assignee } = useSelector((state: RootState) => state.task)
     const data = dataTask.filter((task: Task) => task.assigneeId === assignee.id)
-    if(data.length <= 0) {
+    if (data.length <= 0) {
         return
     }
     // Group tasks by status and count occurrences. example output { 'todo': 1, 'in_progress': 3, 'done': 4 }
@@ -44,12 +48,11 @@ export default function PieChartPanel({ task: dataTask }: Props) {
             ]}
             sx={{
                 [`& .${pieArcLabelClasses.root}`]: {
-                    fill: "white",
+                    fill: "#0d1117",
                     fontSize: 14,
                 },
-                // ✅ Make legend text white
                 "& .MuiChartsLegend-label": {
-                    color: 'white'
+                    color: '#0d1117'
                 }
             }}
             width={400}

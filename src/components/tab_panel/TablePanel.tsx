@@ -1,5 +1,5 @@
 import { DashboardProps, Task } from "@/pages/dashboard";
-import { Autocomplete, Box, Button, Checkbox, InputLabel, MenuItem, Paper, Select, SelectChangeEvent, Stack, Table, TableBody, TableCell, TableContainer, TablePagination, TableRow, TextField, Typography } from "@mui/material";
+import { Autocomplete, Box, Button, Checkbox, Paper, SelectChangeEvent, Stack, Table, TableBody, TableCell, TableContainer, TablePagination, TableRow, TextField, Typography } from "@mui/material";
 import React, { useEffect, useMemo, useState } from "react";
 import AddTaskModal from "../modal/addTaskModal";
 import EnhancedTableHead from "../custom_components/EnhancedTableHead";
@@ -17,10 +17,14 @@ import { v4 as uuidv4 } from "uuid";
 import { User } from "..";
 import { BASE_URL } from "../constants/baseURL";
 
-export default function TablePanel({ task: itasks, assignee }: DashboardProps) {
+interface TablePanelProps extends DashboardProps {
+    openSidebar: boolean
+}
+
+export default function TablePanel({ task: itasks, assignee, openSidebar }: TablePanelProps) {
     const dispatch = useDispatch();
     const { assignee: assigneeFromRedux, filter: filterStatus } = useSelector<RootState, RootState['task']>((state) => state.task);
-    console.log(assigneeFromRedux, filterStatus)
+
     const finalAssigneeId = assigneeFromRedux ?? assignee
     let initialTasks: Task[] = [{
         id: 0,
@@ -56,7 +60,6 @@ export default function TablePanel({ task: itasks, assignee }: DashboardProps) {
     const [orderBy, setOrderBy] = useState<keyof Data | 'action'>('status');
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [page, setPage] = useState(0);
-    const [newStatus, setNewStatus] = useState<string>('todo');
     const [searchText, setSearchText] = useState<string>('');
     const [searchTextArr, setSearchTextArr] = useState<string[]>([]);
     const [windowWidth, setWindowWidth] = useState<number>(0);
@@ -174,32 +177,6 @@ export default function TablePanel({ task: itasks, assignee }: DashboardProps) {
             }
         } catch (err) {
             console.error(`Error in removing task: ${err}`)
-        }
-    }
-
-    const handleEditStatus = async (e?: SelectChangeEvent) => {
-        if (e) {
-            setNewStatus(e.target.value)
-            try {
-                const res = await fetch(`${BASE_URL}/updateTaskStatus`, {
-                    method: 'POST',
-                    headers: {
-                        "Content-Type": 'application/json'
-                    },
-                    body: JSON.stringify({
-                        id: selected,
-                        status: e.target.value.toUpperCase()
-                    })
-                })
-
-                if (res.ok) {
-                    const newTasks = await fetch(`${BASE_URL}/api/task`).then(r => r.json());
-                    dispatch(addTask(newTasks))
-                    setTasks(newTasks);
-                }
-            } catch (err) {
-                console.error(`Error in removing task: ${err}`)
-            }
         }
     }
 
@@ -373,7 +350,6 @@ export default function TablePanel({ task: itasks, assignee }: DashboardProps) {
                     >
                         Add assignee
                     </Button>
-                    <Typography>Please select Assignee</Typography>
                 </Box>
             </Box>
         )
@@ -431,95 +407,77 @@ export default function TablePanel({ task: itasks, assignee }: DashboardProps) {
                 onYesButton={handleDelete}
                 onNoButton={() => setOpenDeleteModal(!openDeleteModal)}
             />
-            <Stack gap={3} direction='column' sx={{ justifyContent: 'space-between', display: windowWidth <= 375 ? "colomn" : 'flex' }}>
-                <Stack gap={3} direction='row' flexWrap="wrap">
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={() => setOpenAddTaskModal(!openAddTaskModal)}
-                        sx={{
-                            fontSize: "clamp(8px, 1.5vw, 15px)",
-                            width: '110px'
-                        }}
-                    >
-                        Add Task
-                    </Button>
-                    <Button
-                        variant="outlined"
-                        color="error"
-                        onClick={() => setOpenDeleteModal(!openDeleteModal)}
-                        disabled={selected.length === 0}
-                    >
-                        <DeleteIcon sx={{ width: 'clamp(15px, 1.5vw, 16px)' }} />
-                    </Button>
-                    {selected.length > 0 &&
-                        <>
-                            <Box>
-                                <Select
-                                    labelId="status-label"
-                                    id="status"
-                                    value={newStatus}
-                                    label="Select Status"
-                                    onChange={(e) => handleEditStatus(e)}
-                                    sx={{
-                                        color: 'white',
-                                        border: '1px solid white',
-                                        '& .MuiSvgIcon-root': { color: 'white' },
-                                        '& .MuiOutlinedInput-notchedOutline': { borderColor: 'white' },
-                                        fontSize: "clamp(10px, 1.5vw, 16px)",
-                                    }}
-                                >
-                                    <MenuItem value="todo" sx={{ fontSize: "clamp(10px, 1.5vw, 16px)" }}>Todo</MenuItem>
-                                    <MenuItem value="in_progress" sx={{ fontSize: "clamp(10px, 1.5vw, 16px)" }}>In-Progress</MenuItem>
-                                    <MenuItem value="done" sx={{ fontSize: "clamp(10px, 1.5vw, 16px)" }}>Done</MenuItem>
-                                </Select>
-                            </Box>
-                        </>
-                    }
-                </Stack>
-                <Stack sx={{ width: 'calc(100vw - (30vw + 48px))' }}>
-                    <Autocomplete
-                        value={searchText}
-                        onInputChange={handleAutocompleteInputChange}
-                        disableClearable
-                        options={searchTextArr}
-                        sx={{ fontSize: "clamp(8px, 1.5vw, 16px)", }}
-                        renderInput={(params) => (
-                            <TextField
-                                {...params}
-                                label="Search by title or description"
-                                slotProps={{
-                                    input: {
-                                        ...params.InputProps,
-                                        type: 'search',
+
+            <Stack
+                direction="row"
+                spacing={2} // Use spacing instead of gap for MUI consistency
+                alignItems="center" // Keeps items vertically centered
+                sx={{ width: '100%' }}
+            >
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => setOpenAddTaskModal(!openAddTaskModal)}
+                    sx={{
+                        fontSize: "clamp(8px, 1.5vw, 15px)",
+                        minWidth: 'fit-content'
+                    }}
+                >
+                    +
+                </Button>
+                <Autocomplete
+                    value={searchText}
+                    onInputChange={handleAutocompleteInputChange}
+                    disableClearable
+                    options={searchTextArr}
+                    sx={{
+                        fontSize: "clamp(8px, 1.5vw, 16px)",
+                        flexGrow: 1,
+                    }}
+                    renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            label="Search by title or description"
+                            slotProps={{
+                                input: {
+                                    ...params.InputProps,
+                                    type: 'search',
+                                },
+                            }}
+                            sx={{
+                                input: {
+                                    color: 'black',
+                                    '&::placeholder': {
+                                        color: 'black',
+                                        opacity: 0.8,
+                                        fontSize: "clamp(8px, 1.5vw, 16px)"
                                     },
-                                }}
-                                sx={{
-                                    input: {
-                                        color: 'white',
-                                        '&::placeholder': {
-                                            color: 'white',
-                                            opacity: 0.8,
-                                            fontSize: "clamp(8px, 1.5vw, 16px)"
-                                        },
+                                },
+                                label: { color: 'black' },
+                                '& .MuiOutlinedInput-root': {
+                                    '& fieldset': {
+                                        borderColor: 'black',
                                     },
-                                    label: { color: 'white' },
-                                    '& .MuiOutlinedInput-root': {
-                                        '& fieldset': {
-                                            borderColor: 'white',
-                                        },
-                                        '&:hover fieldset': {
-                                            borderColor: '#90caf9',
-                                        },
-                                        '&.Mui-focused fieldset': {
-                                            borderColor: '#42a5f5',
-                                        },
+                                    '&:hover fieldset': {
+                                        borderColor: '#90caf9',
                                     },
-                                }}
-                            />
-                        )}
-                    />
-                </Stack>
+                                    '&.Mui-focused fieldset': {
+                                        borderColor: '#42a5f5',
+                                    },
+                                },
+                            }}
+                        />
+                    )}
+                />
+                <Button
+                    variant="outlined"
+                    color="error"
+                    onClick={() => setOpenDeleteModal(!openDeleteModal)}
+                    disabled={selected.length === 0}
+                    sx={{ minWidth: 'fit-content' }}
+                >
+                    <DeleteIcon sx={{ width: 'clamp(15px, 1.5vw, 16px)' }} />
+                </Button>
             </Stack>
             <Paper sx={{ marginTop: 2, padding: 2 }}>
                 <TableContainer>

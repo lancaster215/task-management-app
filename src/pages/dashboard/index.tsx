@@ -19,56 +19,54 @@ export type Task = {
 
 export type Assignee = {
   id: string,
-  name: string
+  name: string,
+  avatar?: any
 }
 
 export type DashboardProps = {
   task: Task[]
-  assignee?: Assignee
+  assignee?: Assignee[]
 }
 
 const Home: React.FC<DashboardProps> = ({ task, assignee }) => {
+  console.log(task, assignee, 'dashboard')
   return (
     <Dashboard task={task} assignee={assignee} />
   )
 }
 
 export const getServerSideProps = async () => {
-  let assigneeProp, taskProp;
-  const assigneeRes = await fetch((`${BASE_URL}/api/users`))
+  try {
+    const [assigneeRes, taskRes] = await Promise.all([
+      fetch(`${BASE_URL}/api/users`),
+      fetch(`${BASE_URL}/api/task`)
+    ]);
 
-  if (!assigneeRes.ok) {
-    const errorText = await assigneeRes.text();
-    console.error("API Error Response:", errorText);
+    if (!assigneeRes.ok || !taskRes.ok) {
+      throw new Error('Failed to fetch API data');
+    }
+
+    const [assignee, task] = await Promise.all([
+      assigneeRes.json(),
+      taskRes.json()
+    ]);
+
     return {
-      props: { task: [], assignee: { id: '', name: 'Error' } },
+      props: {
+        assignee,
+        task
+      },
+    };
+  } catch (error) {
+    console.error("getServerSideProps error:", error);
+
+    return {
+      props: {
+        assignee: [],
+        task: [],
+      },
     };
   }
-
-  if (assigneeRes.ok) {
-    const assignee: Assignee = await assigneeRes.json()
-    assigneeProp = assignee;
-    const taskRes = await fetch(`${BASE_URL}/api/task`);
-
-    if (!taskRes.ok) {
-      const errorText = await taskRes.text();
-      console.error("API Error Response:", errorText);
-      return {
-        props: { task: [], assignee: assigneeProp },
-      };
-    }
-
-    if (taskRes.ok) {
-      const task: Task[] = await taskRes.json();
-      taskProp = task;
-    }
-  }
-
-  // const task: Task[] = await res.json();
-  // const assignee: Assignee = await assigneeRes.json()
-  return {
-    props: { taskProp, assigneeProp },
-  }
-}
+};
 
 export default Home

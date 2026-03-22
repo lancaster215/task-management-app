@@ -13,6 +13,8 @@ interface SideDrawerProps {
     sidebarWidth: number,
     openSidebar: boolean,
     setOpenSideBar: (open: boolean) => void,
+    openAddNewAssignee: boolean,
+    setOpenAddNewAssignee: (open: boolean) => void,
 }
 
 const DrawerHeader = styled('div')(({ theme }) => ({
@@ -87,6 +89,8 @@ function SideDrawer(props: SideDrawerProps) {
                     fromReduxFromAssignee={props.fromReduxFromAssignee}
                     setOpenAddNewAccountModal={props.setOpenAddNewAccountModal}
                     openAddNewAccountModal={props.openAddNewAccountModal}
+                    openAddNewAssignee={props.openAddNewAssignee}
+                    setOpenAddNewAssignee={props.setOpenAddNewAssignee}
                 />
                 <Divider />
                 <TableFunctionList />

@@ -36,12 +36,12 @@ export default function GraphPanel() {
 
     return (
         <Box sx={{ justifyContent: 'center', display: 'flex' }}>
-            <Box sx={{ width: windowWidth <= 375 ? '100%' : '80%', backgroundColor: '#0d1117' }}>
+            <Box sx={{ width: '100%' }}>
                 <Box sx={{ borderBottom: 1, borderColor: 'divider', justifyContent: 'center', display: 'flex' }}>
                     <Tabs value={value} onChange={handleChange} aria-label="tabs">
-                        <Tab label="Pie Chart" {...a11yProps(0)} sx={{ color: 'white', fontSize: "clamp(10px, 1.5vw, 16px)" }} />
-                        <Tab label="Bar Chart" {...a11yProps(1)} sx={{ color: 'white', fontSize: "clamp(10px, 1.5vw, 16px)" }} />
-                        <Tab label="Calendar" {...a11yProps(2)} sx={{ color: 'white', fontSize: "clamp(10px, 1.5vw, 16px)" }} />
+                        <Tab label="Pie Chart" {...a11yProps(0)} sx={{ color: '#0d1117', fontSize: "clamp(10px, 1.5vw, 16px)" }} />
+                        <Tab label="Bar Chart" {...a11yProps(1)} sx={{ color: '#0d1117', fontSize: "clamp(10px, 1.5vw, 16px)" }} />
+                        <Tab label="Calendar" {...a11yProps(2)} sx={{ color: '#0d1117', fontSize: "clamp(10px, 1.5vw, 16px)" }} />
                     </Tabs>
                 </Box>
                 <CustomTabPanel value={value} index={0}>

@@ -194,7 +194,6 @@ export default function AssigneeTable() {
                     >
                         Add assignee
                     </Button>
-                    <Typography>Please select Assignee</Typography>
                 </> :
                     <Paper sx={{ marginTop: '10px', padding: 2, maxWidth: '100%' }}>
                         <TableContainer>

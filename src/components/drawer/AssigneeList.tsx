@@ -1,6 +1,6 @@
 import React from 'react';
 import { Assignee } from "@/pages/dashboard";
-import { Avatar, Box, Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
+import { Avatar, Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 import { useRouter } from "next/router";
 import PersonAdd from '@mui/icons-material/PersonAdd';
 
@@ -9,15 +9,22 @@ interface AssigneeListProps {
     fromReduxFromAssignee: Assignee,
     openAddNewAccountModal: boolean,
     setOpenAddNewAccountModal: (open: boolean) => void,
+    openAddNewAssignee: boolean,
+    setOpenAddNewAssignee: (open: boolean) => void,
 }
 
-
-function AssigneeList({ fromReduxFromAssignee, setOpenAddNewAccountModal, openAddNewAccountModal }: AssigneeListProps) {
+function AssigneeList({
+    fromReduxFromAssignee,
+    setOpenAddNewAccountModal,
+    openAddNewAccountModal,
+    setOpenAddNewAssignee,
+    openAddNewAssignee
+}: AssigneeListProps) {
     const router = useRouter();
     const sideBarItems = [
         {
             title: fromReduxFromAssignee.name ? fromReduxFromAssignee.name : "Select Assigee",
-            link: fromReduxFromAssignee.name ? () => { } : () => router.push("/assignee"),
+            link: () => setOpenAddNewAssignee(!openAddNewAssignee),
             withAvatar: true,
             avatar: <Avatar />,
         },

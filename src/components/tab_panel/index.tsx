@@ -5,8 +5,6 @@ import TablePanel from "./TablePanel";
 import GraphPanel from "./graphs";
 import { useState } from "react";
 import { DashboardProps } from "@/pages/dashboard";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store";
 
 export function a11yProps(index: number) {
 	return {
@@ -21,7 +19,6 @@ interface TabPanleInterface extends DashboardProps {
 }
 
 function TabPanel({ task, assignee: preRenderedAssignee, sidebarWidth, openSidebar }: TabPanleInterface) {
-	const { assignee } = useSelector<RootState, RootState['task']>((state) => state.task);
 	const [value, setValue] = useState<number>(0);
 
 	const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -49,7 +46,8 @@ function TabPanel({ task, assignee: preRenderedAssignee, sidebarWidth, openSideb
 					borderColor: 'divider',
 					justifyContent: 'center',
 					display: 'flex',
-					backgroundColor: 'black'
+					backgroundColor: 'black',
+					borderRadius: '5px'
 				}}>
 				<Tabs value={value} onChange={handleChange} aria-label="tabs">
 					<Tab label="Table" {...a11yProps(0)} sx={{ color: 'white' }} />
@@ -58,7 +56,7 @@ function TabPanel({ task, assignee: preRenderedAssignee, sidebarWidth, openSideb
 				</Tabs>
 			</Box>
 			<CustomTabPanel value={value} index={0}>
-				<TablePanel task={task} assignee={preRenderedAssignee ?? assignee} />
+				<TablePanel openSidebar={openSidebar} task={task} assignee={preRenderedAssignee ?? []} />
 			</CustomTabPanel>
 			<CustomTabPanel value={value} index={1}>
 				Item Two
