@@ -4,7 +4,7 @@ export const headCells: readonly HeadCell[] = [
     {
         id: 'title',
         numeric: false,
-        disablePadding: true,
+        disablePadding: false,
         label: 'Task title',
     },
     {
@@ -18,6 +18,7 @@ export const headCells: readonly HeadCell[] = [
         numeric: false,
         disablePadding: false,
         label: 'Status',
+        minWidth: 150,
     },
     {
         id: 'priority',
@@ -36,13 +37,15 @@ export const headCells: readonly HeadCell[] = [
         numeric: false,
         disablePadding: false,
         label: 'Due Date',
+        minWidth: 150,
     },
-    {
-        id: 'createdAt',
-        numeric: false,
-        disablePadding: false,
-        label: 'Creation Date',
-    },
+    // {
+    //     id: 'createdAt',
+    //     numeric: false,
+    //     disablePadding: false,
+    //     label: 'Creation Date',
+    //     minWidth: 200
+    // },
     {
         id: 'action',
         numeric: false,

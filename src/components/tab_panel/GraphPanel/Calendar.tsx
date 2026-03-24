@@ -7,6 +7,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import { Task } from '@/pages/dashboard';
+import { theme } from '@/styles/theme';
 
 type Props = {
   task: {
@@ -54,15 +55,15 @@ export default function TaskCalendar({ task: dataTask, windowWidth }: Props) {
           day={day}
           sx={{
             bgcolor: today.format("YYYY-MM-DD") === dueToday ?
-              '#e5484d' : //due date today
+              theme.palette.background.red : //due date today
               (day.format('YYYY-MM-DD') > today.format("YYYY-MM-DD")) && isDue ?
-                '#0ac54c' : //due date coming
+                theme.palette.background.green : //due date coming
                 isDue ?
-                  '#a0a0a0' : //due date is overdue
+                  theme.palette.text.secondary : //due date is overdue
                   day.format('YYYY-MM-DD') === today.format("YYYY-MM-DD") ?
-                    '#1565c0' : // today
+                    theme.palette.background.blue : // today
                     undefined,
-            color: '#0d1117',
+            color: theme.palette.text.primary,
             height: windowWidth <= 375 ? '30px' : undefined,
             width: windowWidth <= 375 ? '30px' : undefined,
             borderRadius: '50%',
@@ -78,25 +79,25 @@ export default function TaskCalendar({ task: dataTask, windowWidth }: Props) {
         views={['day']}
         slots={{ day: Day }}
         sx={{
-          color: '#0d1117',
+          color: theme.palette.text.primary,
           width: windowWidth <= 390 ? '150px' : windowWidth <= 450 ? '190px' : '250px',
           '& .MuiTypography-root': {
-            color: '#0d1117',
+            color: theme.palette.text.primary,
           },
           // Month label (November 2025)
           '& .MuiPickersCalendarHeader-label': {
-            color: '#0d1117',
+            color: theme.palette.text.primary,
             fontSize: "clamp(10px, 1.5vw, 16px)"
           },
           // Weekday labels (S, M, T, W, T, F, S)
           '& .MuiDayCalendar-weekDayLabel': {
-            color: '#0d1117',
+            color: theme.palette.text.primary,
             opacity: 0.8,
             fontSize: "clamp(10px, 1.5vw, 16px)"
           },
           // Arrow buttons (chevrons)
           '& .MuiPickersArrowSwitcher-button': {
-            color: '#0d1117',
+            color: theme.palette.text.primary,
           },
           // Calendar container spacing and layout
           '& .MuiPickersCalendarHeader-root': {

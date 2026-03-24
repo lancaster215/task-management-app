@@ -2,30 +2,23 @@ import React from 'react';
 import { Box, Button, MenuItem, Modal, Select, TextField } from "@mui/material";
 import styles from "../styles";
 import { formattedDate } from "@/helpers/dateFormatter";
-import { Task } from "@/pages/dashboard";
+import { useTablePanelContext } from '../hooks/useTableContext';
 
-type AddTaskModalProps = {
-    openEditTaskModal: boolean,
-    setOpenEditTaskModal: (open: number | null) => void,
-    task: Task,
-    setTask: React.Dispatch<React.SetStateAction<Task | null>>;
-    handleSubmit: (e: React.FormEvent) => void,
-}
-
-export default function EditTaskModal({ openEditTaskModal, setOpenEditTaskModal, task, setTask, handleSubmit }: AddTaskModalProps) {
-    if (!task) return null;
+export default function EditTaskModal() {
+    const { editingTask, handleSubmit, editingId, setEditingId, setEditingTask } = useTablePanelContext();
+    if (!editingTask) return null;
     const handleOnSubmit = (e: React.FormEvent) => {
         handleSubmit(e);
-        setOpenEditTaskModal(null)
+        setEditingId(null)
     }
 
     return (
         <Modal
-            open={openEditTaskModal}
-            onClose={() => setOpenEditTaskModal(null)}
+            open={editingId !== null}
+            onClose={() => setEditingId(null)}
             aria-labelledby="edit-task-modal"
             aria-describedby="editing-task"
-            sx={{ justifyContent: 'center', display: 'flex', alignItems: 'center'}}
+            sx={{ justifyContent: 'center', display: 'flex', alignItems: 'center' }}
         >
             <Box
                 component="form"
@@ -35,24 +28,24 @@ export default function EditTaskModal({ openEditTaskModal, setOpenEditTaskModal,
                 <TextField
                     label="Task title"
                     name="title"
-                    value={task.title}
-                    onChange={(e) => setTask({ ...task, title: e.target.value })}
+                    value={editingTask.title}
+                    onChange={(e) => setEditingTask({ ...editingTask, title: e.target.value })}
                     fullWidth
                     required
                 />
                 <TextField
                     label="Describe your task"
                     name="description"
-                    value={task.description}
-                    onChange={(e) => setTask({ ...task, description: e.target.value })}
+                    value={editingTask.description}
+                    onChange={(e) => setEditingTask({ ...editingTask, description: e.target.value })}
                     fullWidth
                     required
                 />
                 <TextField
                     label="Due date"
                     name="dueDate"
-                    value={formattedDate(task.dueDate)}
-                    onChange={(e) => setTask({ ...task, dueDate: e.target.value })}
+                    value={formattedDate(editingTask.dueDate)}
+                    onChange={(e) => setEditingTask({ ...editingTask, dueDate: e.target.value })}
                     fullWidth
                     required
                     type="date"
@@ -60,9 +53,9 @@ export default function EditTaskModal({ openEditTaskModal, setOpenEditTaskModal,
                 <Select
                     labelId="role-label"
                     id="role"
-                    value={task.priority.toLocaleLowerCase()}
+                    value={editingTask.priority.toLocaleLowerCase()}
                     label="Select Priority"
-                    onChange={(e) => setTask({ ...task, priority: e.target.value })}
+                    onChange={(e) => setEditingTask({ ...editingTask, priority: e.target.value })}
                 >
                     <MenuItem value="low">Low</MenuItem>
                     <MenuItem value="medium">Medium</MenuItem>
@@ -71,9 +64,9 @@ export default function EditTaskModal({ openEditTaskModal, setOpenEditTaskModal,
                 <Select
                     labelId="role-label"
                     id="role"
-                    value={task.status.toLocaleLowerCase()}
+                    value={editingTask.status.toLocaleLowerCase()}
                     label="Select Status"
-                    onChange={(e) => setTask({ ...task, status: e.target.value })}
+                    onChange={(e) => setEditingTask({ ...editingTask, status: e.target.value })}
                 >
                     <MenuItem value="todo">Todo</MenuItem>
                     <MenuItem value="in_progress">In-Progress</MenuItem>
@@ -82,9 +75,9 @@ export default function EditTaskModal({ openEditTaskModal, setOpenEditTaskModal,
                 <Select
                     labelId="role-label"
                     id="tags"
-                    value={task.tags.toLocaleLowerCase()}
+                    value={editingTask.tags.toLocaleLowerCase()}
                     label="Select Tags/Label"
-                    onChange={(e) => setTask({ ...task, tags: e.target.value })}
+                    onChange={(e) => setEditingTask({ ...editingTask, tags: e.target.value })}
                 >
                     <MenuItem value="feature">Feature</MenuItem>
                     <MenuItem value="enhancement">Enhancement</MenuItem>

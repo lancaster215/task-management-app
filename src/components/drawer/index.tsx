@@ -1,13 +1,13 @@
 import React from 'react';
-import { Box, Divider, Drawer, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, styled, Typography } from "@mui/material";
-import { Assignee } from '@/pages/dashboard';
+import { Box, Divider, Drawer, IconButton, styled, Typography } from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import AssigneeList from './AssigneeList';
 import TableFunctionList from './TableFunctionList';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store';
 
 interface SideDrawerProps {
-    fromReduxFromAssignee: Assignee,
     openAddNewAccountModal: boolean,
     setOpenAddNewAccountModal: (open: boolean) => void,
     sidebarWidth: number,
@@ -27,7 +27,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 }));
 
 function SideDrawer(props: SideDrawerProps) {
-
+    const { assignee: fromReduxFromAssignee } = useSelector<RootState, RootState['task']>((state) => state.task);
     return (
         <Box
             component="nav"
@@ -86,7 +86,7 @@ function SideDrawer(props: SideDrawerProps) {
                 </DrawerHeader>
                 <Divider />
                 <AssigneeList
-                    fromReduxFromAssignee={props.fromReduxFromAssignee}
+                    fromReduxFromAssignee={fromReduxFromAssignee}
                     setOpenAddNewAccountModal={props.setOpenAddNewAccountModal}
                     openAddNewAccountModal={props.openAddNewAccountModal}
                     openAddNewAssignee={props.openAddNewAssignee}

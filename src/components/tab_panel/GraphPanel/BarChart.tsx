@@ -3,6 +3,7 @@ import { Task } from "@/pages/dashboard";
 import { RootState } from "@/store";
 import { BarChart } from "@mui/x-charts/BarChart";
 import { useSelector } from "react-redux";
+import { theme } from '@/styles/theme';
 
 type Props = {
     task: {
@@ -43,9 +44,9 @@ export default function BarChartPanel({ task: dataTask, windowWidth }: Props) {
     return (
         <BarChart
             series={[
-                { data: [low, 0, 0], label: "Low", color: "#3b82f6" },
-                { data: [0, medium, 0], label: "Medium", color: "#fbbf24" },
-                { data: [0, 0, high], label: "High", color: "#ef4444" }
+                { data: [low, 0, 0], label: "Low", color: theme.palette.background.blue },
+                { data: [0, medium, 0], label: "Medium", color: theme.palette.primary.main },
+                { data: [0, 0, high], label: "High", color: theme.palette.background.red }
             ]}
             xAxis={[{ data: ["Low", "Medium", "High"], scaleType: "band" }]}
             yAxis={[{ width: 50 }]}

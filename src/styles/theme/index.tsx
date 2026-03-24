@@ -9,6 +9,12 @@ export const theme = createTheme({
         background: {
             default: '#FFFFFF',
             paper: '#F4F4F4',
+            green: '#6FC276',
+            blue: '#89CFF0',
+            red: '#FF6B6B',
+            purple: '#A78BFA',
+            orange: '#F59E0B',
+            teal: '#20C997',
         },
         text: {
             primary: '#161b22',

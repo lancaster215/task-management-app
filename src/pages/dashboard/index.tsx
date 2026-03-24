@@ -3,18 +3,18 @@ import Dashboard from "@/components";
 import { BASE_URL } from '@/components/constants/baseURL';
 
 export type Task = {
-  id: number,
-  name: string,
-  time: string,
+  id?: number,
+  name?: string,
+  time?: string,
   title: string,
   description: string,
   status: string,
   priority: string,
   dueDate: string,
   tags: string,
-  createdAt: string,
-  action: (string | number),
-  assigneeId: string,
+  createdAt?: string,
+  action?: (string | number),
+  assigneeId?: string,
 }
 
 export type Assignee = {

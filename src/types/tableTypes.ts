@@ -17,4 +17,5 @@ export interface HeadCell {
   id: keyof Data | 'action';
   label: string;
   numeric: boolean;
+  minWidth?: number;
 }

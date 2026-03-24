@@ -4,6 +4,7 @@ import { PieChart, pieArcLabelClasses } from "@mui/x-charts/PieChart";
 import { DefaultizedPieValueType, Direction } from "@mui/x-charts";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
+import { theme } from '@/styles/theme';
 
 interface PieChartPanelProps {
     task: Task[]
@@ -48,11 +49,11 @@ export default function PieChartPanel({ task: dataTask }: PieChartPanelProps) {
             ]}
             sx={{
                 [`& .${pieArcLabelClasses.root}`]: {
-                    fill: "#0d1117",
+                    fill: theme.palette.text.primary,
                     fontSize: 14,
                 },
                 "& .MuiChartsLegend-label": {
-                    color: '#0d1117'
+                    color: theme.palette.text.primary
                 }
             }}
             width={400}

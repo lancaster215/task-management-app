@@ -2,26 +2,26 @@ import { Box, Button, Modal, Paper, Table, TableBody, TableCell, TableContainer,
 import React, { useState } from "react";
 import { Data, Order } from '@/types/tableTypes';
 import EnhancedTableHead from "../custom_components/EnhancedTableHead";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setAssignee } from "@/store/taskSlice";
 import { Assignee } from "@/pages/dashboard";
+import { RootState } from "@/store";
 
 interface AssigneeTableProps {
     openAddNewAssignee: boolean,
     setOpenAddNewAssignee: (value: boolean) => void,
     assignee: Assignee[],
-    selectedAssignee: Assignee
 }
 
 export default function AssigneeTable(props: AssigneeTableProps) {
     const dispatch = useDispatch();
-
+    const { assignee: fromReduxFromAssignee } = useSelector<RootState, RootState['task']>((state) => state.task);
     const [openAddNewAccountModal, setOpenAddNewAccountModal] = useState<boolean>(false);
     const [order, setOrder] = useState<Order>('asc');
     const [orderBy, setOrderBy] = useState<keyof Data | 'action'>('status');
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [page, setPage] = useState(0);
-    const [assigneeId, setAssigneeId] = useState<string>(props.selectedAssignee.id);
+    const [assigneeId, setAssigneeId] = useState<string>(fromReduxFromAssignee.id);
 
 
     const handleRequestSort = (

@@ -3,36 +3,16 @@ import { Box, Button, IconButton, InputAdornment, InputLabel, MenuItem, Modal, S
 import styles from "../styles";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import { useRef } from "react";
+import { useTablePanelContext } from '../hooks/useTableContext';
 
-type AddTaskModalProps = {
-    openAddTaskModal: boolean,
-    setOpenAddTaskModal: (open: boolean) => void,
-    newTask: {
-        title: string,
-        description: string,
-        status: string,
-        priority: string,
-        dueDate: string,
-        tags: string,
-    },
-    setNewTask: (task: {
-        title: string,
-        description: string,
-        status: string,
-        priority: string,
-        dueDate: string,
-        tags: string,
-    }) => void,
-    handleSubmit: (e: React.FormEvent) => void,
-}
-
-export default function AddTaskModal({ openAddTaskModal, setOpenAddTaskModal, newTask, setNewTask, handleSubmit }: AddTaskModalProps) {
+export default function AddTaskModal() {
+    const { openAddTaskModal, setOpenAddTaskModal, newTask, setNewTask, handleSubmit } = useTablePanelContext();
     const dateInputRef = useRef<HTMLInputElement | null>(null);
 
     const handleIconClick = () => {
         if (dateInputRef.current) {
-        dateInputRef.current.showPicker?.(); // ✅ Triggers the browser date picker
-        dateInputRef.current.focus(); // fallback for browsers that don't support showPicker
+            dateInputRef.current.showPicker?.()
+            dateInputRef.current.focus();
         }
     };
     const handleOnSubmit = (e: React.FormEvent) => {
@@ -45,7 +25,7 @@ export default function AddTaskModal({ openAddTaskModal, setOpenAddTaskModal, ne
             onClose={() => setOpenAddTaskModal(!openAddTaskModal)}
             aria-labelledby="add-task-modal"
             aria-describedby="adding-task"
-            sx={{ justifyContent: 'center', display: 'flex', alignItems: 'center'}}
+            sx={{ justifyContent: 'center', display: 'flex', alignItems: 'center' }}
         >
             <Box
                 component="form"
@@ -85,11 +65,11 @@ export default function AddTaskModal({ openAddTaskModal, setOpenAddTaskModal, ne
                     // }}
                     InputProps={{
                         endAdornment: (
-                        <InputAdornment position="end">
-                            <IconButton onClick={handleIconClick}>
-                                <CalendarTodayIcon sx={{ color: "#000000de" }} />
-                            </IconButton>
-                        </InputAdornment>
+                            <InputAdornment position="end">
+                                <IconButton onClick={handleIconClick}>
+                                    <CalendarTodayIcon sx={{ color: "#000000de" }} />
+                                </IconButton>
+                            </InputAdornment>
                         ),
                     }}
                     sx={{

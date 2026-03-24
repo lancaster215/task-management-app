@@ -102,7 +102,6 @@ export default function Dashboard({ task: task, assignee: preRenderedAssignee }:
         openAddNewAssignee={openAddNewAssignee}
         setOpenAddNewAssignee={setOpenAddNewAssignee}
         assignee={preRenderedAssignee ?? []}
-        selectedAssignee={fromReduxFromAssignee}
       />
 
       <Box
@@ -117,7 +116,6 @@ export default function Dashboard({ task: task, assignee: preRenderedAssignee }:
       >
         {/* SIDE DRAWER */}
         <SideDrawer
-          fromReduxFromAssignee={fromReduxFromAssignee}
           setOpenAddNewAccountModal={setOpenAddNewAccountModal}
           openAddNewAccountModal={openAddNewAccountModal}
           sidebarWidth={SIDEBAR_WIDTH}
