@@ -1,128 +1,147 @@
 import React from 'react';
-import { Box, Button, IconButton, InputAdornment, InputLabel, MenuItem, Modal, Select, TextField } from "@mui/material";
-import styles from "../styles";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import { useRef } from "react";
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import {
+    Box, Button, InputLabel,
+    MenuItem, Modal, Select, TextField
+} from "@mui/material";
 import { useTablePanelContext } from '../hooks/useTableContext';
+import styles from "../styles";
+
+const taskSchema = z.object({
+    title: z.string().min(1, "Title is required"),
+    description: z.string().min(1, "Description is required"),
+    dueDate: z.string().min(1, "Date is required"),
+    priority: z.enum(["LOW", "MEDIUM", "HIGH"]),
+    status: z.enum(["TODO", "IN_PROGRESS", "DONE"]),
+    tags: z.enum(["FEATURE", "BUG", "ENHANCEMENT"])
+});
+
+export type TaskFormData = z.infer<typeof taskSchema>;
 
 export default function AddTaskModal() {
-    const { openAddTaskModal, setOpenAddTaskModal, newTask, setNewTask, handleSubmit } = useTablePanelContext();
-    const dateInputRef = useRef<HTMLInputElement | null>(null);
+    const { openAddTaskModal, setOpenAddTaskModal, handleSubmitToAPI } = useTablePanelContext();
 
-    const handleIconClick = () => {
-        if (dateInputRef.current) {
-            dateInputRef.current.showPicker?.()
-            dateInputRef.current.focus();
+    const { control, handleSubmit, formState: { errors } } = useForm<TaskFormData>({
+        resolver: zodResolver(taskSchema),
+        defaultValues: {
+            title: '',
+            description: '',
+            dueDate: '',
+            priority: 'LOW',
+            status: 'TODO',
+            tags: 'FEATURE'
         }
+    });
+
+    const onSubmit = (data: TaskFormData) => {
+        console.log('onSubmit', data)
+        handleSubmitToAPI(data)
+        setOpenAddTaskModal(false);
     };
-    const handleOnSubmit = (e: React.FormEvent) => {
-        handleSubmit(e);
-        setOpenAddTaskModal(!openAddTaskModal)
-    }
+
     return (
         <Modal
             open={openAddTaskModal}
-            onClose={() => setOpenAddTaskModal(!openAddTaskModal)}
+            onClose={() => setOpenAddTaskModal(false)}
             aria-labelledby="add-task-modal"
             aria-describedby="adding-task"
             sx={{ justifyContent: 'center', display: 'flex', alignItems: 'center' }}
         >
-            <Box
-                component="form"
-                onSubmit={(e) => handleOnSubmit(e)}
-                sx={styles.formBox}
-            >
-                <TextField
-                    label="Task title"
+            <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={styles.formBox}>
+                <Controller
                     name="title"
-                    value={newTask.title}
-                    onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
-                    fullWidth
-                    required
+                    control={control}
+                    render={({ field }) => (
+                        <TextField
+                            {...field}
+                            label="Task title"
+                            fullWidth
+                            error={!!errors.title}
+                            helperText={errors.title?.message}
+                        />
+                    )}
                 />
-                <TextField
-                    label="Describe your task"
+
+                <Controller
                     name="description"
-                    value={newTask.description}
-                    onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
-                    fullWidth
-                    required
+                    control={control}
+                    render={({ field }) => (
+                        <TextField
+                            {...field}
+                            label="Describe your task"
+                            fullWidth
+                            error={!!errors.description}
+                            helperText={errors.description?.message}
+                        />
+                    )}
                 />
+
                 <InputLabel id="due-date" sx={{ color: "#000000de" }}>
                     Due Date
                 </InputLabel>
-                <TextField
+                <Controller
                     name="dueDate"
-                    // label="Due Date"
-                    value={newTask.dueDate}
-                    onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
-                    fullWidth
-                    required
-                    type="date"
-                    inputRef={dateInputRef}
-                    // InputLabelProps={{
-                    //     shrink: true, // keeps the label visible when a date is selected
-                    // }}
-                    InputProps={{
-                        endAdornment: (
-                            <InputAdornment position="end">
-                                <IconButton onClick={handleIconClick}>
-                                    <CalendarTodayIcon sx={{ color: "#000000de" }} />
-                                </IconButton>
-                            </InputAdornment>
-                        ),
-                    }}
-                    sx={{
-                        input: { color: "#000000de" },
-                        label: { color: "#000000de" },
-                    }}
+                    control={control}
+                    render={({ field }) => (
+                        <TextField
+                            {...field}
+                            type="date"
+                            fullWidth
+                        // InputProps={{
+                        //     endAdornment: (
+                        //         <InputAdornment position="end">
+                        //             <CalendarTodayIcon />
+                        //         </InputAdornment>
+                        //     ),
+                        // }}
+                        />
+                    )}
                 />
-                <InputLabel id="priority-label" sx={{ color: "#000000de" }}>
-                    Select Priority
-                </InputLabel>
-                <Select
-                    labelId="priority-label"
-                    id="priority"
-                    value={newTask.priority}
-                    onChange={(e) => setNewTask({ ...newTask, priority: e.target.value })}
-                    label="Select Priority"
-                >
-                    <MenuItem value="low">Low</MenuItem>
-                    <MenuItem value="medium">Medium</MenuItem>
-                    <MenuItem value="high">High</MenuItem>
-                </Select>
+                <InputLabel>Priority</InputLabel>
+                <Controller
+                    name="priority"
+                    control={control}
+                    render={({ field }) => (
+                        <Select {...field} fullWidth>
+                            <MenuItem value="LOW">Low</MenuItem>
+                            <MenuItem value="MEDIUM">Medium</MenuItem>
+                            <MenuItem value="HIGH">High</MenuItem>
+                        </Select>
+                    )}
+                />
                 <InputLabel id="status-label" sx={{ color: "#000000de" }}>
                     Select Status
                 </InputLabel>
-                <Select
-                    labelId="status-label"
-                    id="status"
-                    value={newTask.status}
-                    label="Select Status"
-                    onChange={(e) => setNewTask({ ...newTask, status: e.target.value })}
-                >
-                    <MenuItem value="todo">Todo</MenuItem>
-                    <MenuItem value="in_progress">In-Progress</MenuItem>
-                    <MenuItem value="done">Done</MenuItem>
-                </Select>
+                <Controller
+                    name="status"
+                    control={control}
+                    render={({ field }) => (
+                        <Select {...field} fullWidth>
+                            <MenuItem value="TODO">Todo</MenuItem>
+                            <MenuItem value="IN_PROGRESS">In Progress</MenuItem>
+                            <MenuItem value="DONE">Done</MenuItem>
+                        </Select>
+                    )}
+                />
                 <InputLabel id="tags-label" sx={{ color: "#000000de" }}>
                     Select Tags
                 </InputLabel>
-                <Select
-                    labelId="tags-label"
-                    id="tags"
-                    value={newTask.tags}
-                    label="Select Tags/Label"
-                    onChange={(e) => setNewTask({ ...newTask, tags: e.target.value })}
-                >
-                    <MenuItem value="feature">Feature</MenuItem>
-                    <MenuItem value="enhancement">Enhancement</MenuItem>
-                    <MenuItem value="bug">Bug</MenuItem>
-                </Select>
-                <Button type="submit" variant="contained" color="primary">
-                    Add New Task
-                </Button>
+                <Controller
+                    name="tags"
+                    control={control}
+                    render={({ field }) => (
+                        <Select {...field} fullWidth>
+                            <MenuItem value="FEATURE">Feature</MenuItem>
+                            <MenuItem value="BUG">Bug</MenuItem>
+                            <MenuItem value="ENHANCEMENT">Enhancement</MenuItem>
+                        </Select>
+                    )}
+                />
+
+                <Button type="submit" variant="contained">Add New Task</Button>
             </Box>
         </Modal>
-    )
+    );
 }

@@ -13,12 +13,12 @@ export function a11yProps(index: number) {
 	};
 }
 
-interface TabPanleInterface extends DashboardProps {
+interface TabPanleInterface {
 	sidebarWidth: number,
 	openSidebar: boolean,
 }
 
-function TabPanel({ task, assignee: preRenderedAssignee, sidebarWidth, openSidebar }: TabPanleInterface) {
+function TabPanel({ sidebarWidth, openSidebar }: TabPanleInterface) {
 	const [tabValue, setTabValue] = useState<number>(0)
 
 	const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -56,8 +56,8 @@ function TabPanel({ task, assignee: preRenderedAssignee, sidebarWidth, openSideb
 				</Tabs>
 			</Box>
 			<CustomTabPanel value={tabValue} index={0}>
-				<TablePanelProvider itasks={task} assignee={preRenderedAssignee ?? []}>
-					<TablePanel openSidebar={openSidebar} task={task} assignee={preRenderedAssignee ?? []} />
+				<TablePanelProvider>
+					<TablePanel />
 				</TablePanelProvider>
 			</CustomTabPanel>
 			<CustomTabPanel value={tabValue} index={1}>

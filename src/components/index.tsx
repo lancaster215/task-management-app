@@ -3,9 +3,9 @@ import Box from '@mui/material/Box';
 import { DashboardProps } from '@/pages/dashboard';
 import { v4 as uuidv4 } from "uuid";
 import { RootState } from "@/store";
-import AddNewAccountModal from './modal/addNewAccount';
+import AddNewAssigneeModal, { AssigneeFormData } from './modal/addNewAssignee';
 import { useDispatch, useSelector } from 'react-redux';
-import { setAssignee } from '@/store/taskSlice';
+import { setAssignee, setAssignees } from '@/store/taskSlice';
 import { BASE_URL } from './constants/baseURL';
 import TabPanel from './tab_panel';
 import SideDrawer from './drawer';
@@ -42,23 +42,19 @@ export function CustomTabPanel(props: TabPanelProps) {
 const SIDEBAR_WIDTH = 280;
 
 
-export default function Dashboard({ task: task, assignee: preRenderedAssignee }: DashboardProps) {
-  const { assignee: fromReduxFromAssignee } = useSelector<RootState, RootState['task']>((state) => state.task);
+export default function Dashboard() {
+  const { assignees } = useSelector((state: RootState) => state.task);
+
   const dispatch = useDispatch();
   const [openAddNewAccountModal, setOpenAddNewAccountModal] = useState<boolean>(false);
-  const [newUser, setNewUser] = useState<User>({
-    id: '',
-    name: '',
-  })
   const [openSidebar, setOpenSideBar] = useState(false);
   const [openAddNewAssignee, setOpenAddNewAssignee] = useState<boolean>(false);
 
-  const handleOnSubmit = async (e?: React.FormEvent) => {
-    e?.preventDefault();
+  const handleOnSubmit = async (formData: AssigneeFormData) => {
     try {
       const payload = {
         id: uuidv4(),
-        name: newUser.name,
+        name: formData.name,
       }
       const addUserResponse = await fetch(`${BASE_URL}/api/addUser`, {
         method: 'POST',
@@ -79,6 +75,26 @@ export default function Dashboard({ task: task, assignee: preRenderedAssignee }:
     setOpenAddNewAccountModal(!openAddNewAccountModal)
   }
 
+  const handleDelete = async (selected: string) => {
+    try {
+      const res = await fetch(`${BASE_URL}/api/removeUser`, {
+        method: 'POST',
+        headers: {
+          "Content-Type": 'application/json'
+        },
+        body: JSON.stringify({ selected }) //array
+      })
+
+      if (res.ok) {
+        const newUser = await fetch(`${BASE_URL}/api/users`).then(r => r.json());
+        const newAssignee = newUser.filter((task: User) => task.id === selected)
+        dispatch(setAssignees(newAssignee))
+      }
+    } catch (err) {
+      console.error(`Error in removing task: ${err}`)
+    }
+  }
+
   return (
     <Box
       sx={{
@@ -89,20 +105,20 @@ export default function Dashboard({ task: task, assignee: preRenderedAssignee }:
         bgcolor: 'background.default',
       }}
     >
-      <AddNewAccountModal
+      <AddNewAssigneeModal
         openAddNewAccountModal={openAddNewAccountModal}
         setOpenAddNewAccountModal={setOpenAddNewAccountModal}
         handleOnSubmit={handleOnSubmit}
         onNoButton={() => setOpenAddNewAccountModal(!openAddNewAccountModal)}
-        newUser={newUser}
-        setNewUser={setNewUser}
       />
 
-      <AssigneeTable
-        openAddNewAssignee={openAddNewAssignee}
-        setOpenAddNewAssignee={setOpenAddNewAssignee}
-        assignee={preRenderedAssignee ?? []}
-      />
+      {assignees && assignees.length > 0 &&
+        <AssigneeTable
+          openAddNewAssignee={openAddNewAssignee}
+          setOpenAddNewAssignee={setOpenAddNewAssignee}
+          handleDelete={handleDelete}
+        />
+      }
 
       <Box
         sx={{
@@ -127,8 +143,6 @@ export default function Dashboard({ task: task, assignee: preRenderedAssignee }:
 
         {/* TABS */}
         <TabPanel
-          task={task}
-          assignee={preRenderedAssignee}
           sidebarWidth={SIDEBAR_WIDTH}
           openSidebar={openSidebar}
         />

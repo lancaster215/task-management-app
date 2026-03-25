@@ -1,16 +1,41 @@
 import React from 'react';
-import { Box, Button, MenuItem, Modal, Select, TextField } from "@mui/material";
+import { Box, Button, InputLabel, MenuItem, Modal, Select, TextField } from "@mui/material";
 import styles from "../styles";
-import { formattedDate } from "@/helpers/dateFormatter";
 import { useTablePanelContext } from '../hooks/useTableContext';
+import { Controller, useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { TaskFormData } from './addTaskModal';
+
+const taskSchema = z.object({
+    title: z.string().min(1, "Title is required"),
+    description: z.string().min(1, "Description is required"),
+    dueDate: z.string().min(1, "Date is required"),
+    priority: z.enum(["LOW", "MEDIUM", "HIGH"]),
+    status: z.enum(["TODO", "IN_PROGRESS", "DONE"]),
+    tags: z.enum(["FEATURE", "BUG", "ENHANCEMENT"])
+});
+
 
 export default function EditTaskModal() {
-    const { editingTask, handleSubmit, editingId, setEditingId, setEditingTask } = useTablePanelContext();
-    if (!editingTask) return null;
-    const handleOnSubmit = (e: React.FormEvent) => {
-        handleSubmit(e);
-        setEditingId(null)
-    }
+    const { editingId, setEditingId, setOpenAddTaskModal, handleSaveEdit } = useTablePanelContext();
+
+    const { control, handleSubmit, formState: { errors } } = useForm<TaskFormData>({
+        resolver: zodResolver(taskSchema),
+        defaultValues: {
+            title: '',
+            description: '',
+            dueDate: '',
+            priority: 'LOW',
+            status: 'TODO',
+            tags: 'FEATURE'
+        }
+    });
+    const onSubmit = (data: TaskFormData) => {
+        console.log('onSubmit', data)
+        handleSaveEdit(data)
+        setOpenAddTaskModal(false);
+    };
 
     return (
         <Modal
@@ -20,72 +45,98 @@ export default function EditTaskModal() {
             aria-describedby="editing-task"
             sx={{ justifyContent: 'center', display: 'flex', alignItems: 'center' }}
         >
-            <Box
-                component="form"
-                onSubmit={(e) => handleOnSubmit(e)}
-                sx={styles.formBox}
-            >
-                <TextField
-                    label="Task title"
+            <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={styles.formBox}>
+                <Controller
                     name="title"
-                    value={editingTask.title}
-                    onChange={(e) => setEditingTask({ ...editingTask, title: e.target.value })}
-                    fullWidth
-                    required
+                    control={control}
+                    render={({ field }) => (
+                        <TextField
+                            {...field}
+                            label="Task title"
+                            fullWidth
+                            error={!!errors.title}
+                            helperText={errors.title?.message}
+                        />
+                    )}
                 />
-                <TextField
-                    label="Describe your task"
+
+                <Controller
                     name="description"
-                    value={editingTask.description}
-                    onChange={(e) => setEditingTask({ ...editingTask, description: e.target.value })}
-                    fullWidth
-                    required
+                    control={control}
+                    render={({ field }) => (
+                        <TextField
+                            {...field}
+                            label="Describe your task"
+                            fullWidth
+                            error={!!errors.description}
+                            helperText={errors.description?.message}
+                        />
+                    )}
                 />
-                <TextField
-                    label="Due date"
+
+                <InputLabel id="due-date" sx={{ color: "#000000de" }}>
+                    Due Date
+                </InputLabel>
+                <Controller
                     name="dueDate"
-                    value={formattedDate(editingTask.dueDate)}
-                    onChange={(e) => setEditingTask({ ...editingTask, dueDate: e.target.value })}
-                    fullWidth
-                    required
-                    type="date"
+                    control={control}
+                    render={({ field }) => (
+                        <TextField
+                            {...field}
+                            type="date"
+                            fullWidth
+                        // InputProps={{
+                        //     endAdornment: (
+                        //         <InputAdornment position="end">
+                        //             <CalendarTodayIcon />
+                        //         </InputAdornment>
+                        //     ),
+                        // }}
+                        />
+                    )}
                 />
-                <Select
-                    labelId="role-label"
-                    id="role"
-                    value={editingTask.priority.toLocaleLowerCase()}
-                    label="Select Priority"
-                    onChange={(e) => setEditingTask({ ...editingTask, priority: e.target.value })}
-                >
-                    <MenuItem value="low">Low</MenuItem>
-                    <MenuItem value="medium">Medium</MenuItem>
-                    <MenuItem value="high">High</MenuItem>
-                </Select>
-                <Select
-                    labelId="role-label"
-                    id="role"
-                    value={editingTask.status.toLocaleLowerCase()}
-                    label="Select Status"
-                    onChange={(e) => setEditingTask({ ...editingTask, status: e.target.value })}
-                >
-                    <MenuItem value="todo">Todo</MenuItem>
-                    <MenuItem value="in_progress">In-Progress</MenuItem>
-                    <MenuItem value="done">Done</MenuItem>
-                </Select>
-                <Select
-                    labelId="role-label"
-                    id="tags"
-                    value={editingTask.tags.toLocaleLowerCase()}
-                    label="Select Tags/Label"
-                    onChange={(e) => setEditingTask({ ...editingTask, tags: e.target.value })}
-                >
-                    <MenuItem value="feature">Feature</MenuItem>
-                    <MenuItem value="enhancement">Enhancement</MenuItem>
-                    <MenuItem value="bug">Bug</MenuItem>
-                </Select>
-                <Button type="submit" variant="contained" color="primary">
-                    Save Task
-                </Button>
+                <InputLabel>Priority</InputLabel>
+                <Controller
+                    name="priority"
+                    control={control}
+                    render={({ field }) => (
+                        <Select {...field} fullWidth>
+                            <MenuItem value="LOW">Low</MenuItem>
+                            <MenuItem value="MEDIUM">Medium</MenuItem>
+                            <MenuItem value="HIGH">High</MenuItem>
+                        </Select>
+                    )}
+                />
+                <InputLabel id="status-label" sx={{ color: "#000000de" }}>
+                    Select Status
+                </InputLabel>
+                <Controller
+                    name="status"
+                    control={control}
+                    render={({ field }) => (
+                        <Select {...field} fullWidth>
+                            <MenuItem value="TODO">Todo</MenuItem>
+                            <MenuItem value="IN_PROGRESS">In Progress</MenuItem>
+                            <MenuItem value="DONE">Done</MenuItem>
+                        </Select>
+                    )}
+                />
+                <InputLabel id="tags-label" sx={{ color: "#000000de" }}>
+                    Select Tags
+                </InputLabel>
+                <Controller
+                    name="tags"
+                    control={control}
+                    render={({ field }) => (
+                        <Select {...field} fullWidth>
+                            <MenuItem value="FEATURE">Feature</MenuItem>
+                            <MenuItem value="BUG">Bug</MenuItem>
+                            <MenuItem value="ENHANCEMENT">Enhancement</MenuItem>
+                        </Select>
+                    )}
+                />
+
+                <Button type="submit" variant="contained">Add New Task</Button>
             </Box>
         </Modal>
     )

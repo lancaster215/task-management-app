@@ -3,10 +3,11 @@ import { Assignee } from "@/pages/dashboard";
 import { Avatar, Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 import { useRouter } from "next/router";
 import PersonAdd from '@mui/icons-material/PersonAdd';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store';
 
 
 interface AssigneeListProps {
-    fromReduxFromAssignee: Assignee,
     openAddNewAccountModal: boolean,
     setOpenAddNewAccountModal: (open: boolean) => void,
     openAddNewAssignee: boolean,
@@ -14,26 +15,28 @@ interface AssigneeListProps {
 }
 
 function AssigneeList({
-    fromReduxFromAssignee,
     setOpenAddNewAccountModal,
     openAddNewAccountModal,
     setOpenAddNewAssignee,
-    openAddNewAssignee
+    openAddNewAssignee,
 }: AssigneeListProps) {
-    const router = useRouter();
+    const { assignee, assignees } = useSelector<RootState, RootState['task']>((state) => state.task);
+
     const sideBarItems = [
         {
-            title: fromReduxFromAssignee.name ? fromReduxFromAssignee.name : "Select Assigee",
+            title: assignee.name ? assignee.name : "Select Assigee",
             link: () => setOpenAddNewAssignee(!openAddNewAssignee),
             withAvatar: true,
             avatar: <Avatar />,
+            disabled: assignees.length === 0
         },
 
         {
             title: 'Add assignee',
             link: () => setOpenAddNewAccountModal(!openAddNewAccountModal),
             withAvatar: true,
-            avatar: <PersonAdd fontSize="small" />
+            avatar: <PersonAdd fontSize="small" />,
+            disabled: false
         },
     ]
     return (
@@ -41,7 +44,7 @@ function AssigneeList({
             <List>
                 {sideBarItems.map((text, index) => (
                     <ListItem key={text.title} disablePadding>
-                        <ListItemButton onClick={text.link}>
+                        <ListItemButton onClick={text.link} disabled={text.disabled}>
                             {text.withAvatar &&
                                 <ListItemIcon>
                                     {text.avatar}

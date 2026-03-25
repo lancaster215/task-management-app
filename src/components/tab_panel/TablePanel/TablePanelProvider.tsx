@@ -1,25 +1,24 @@
 import { User } from "@/components";
 import { BASE_URL } from "@/components/constants/baseURL";
+import { AssigneeFormData } from "@/components/modal/addNewAssignee";
+import { TaskFormData } from "@/components/modal/addTaskModal";
 import { formattedDate } from "@/helpers/dateFormatter";
 import { getComparator } from "@/helpers/getComparator";
 import { Assignee, Task } from "@/pages/dashboard";
 import { RootState } from "@/store";
-import { addTask, setAssignee } from "@/store/taskSlice";
+import { setTasks, setAssignee } from "@/store/taskSlice";
 import { Data, Order } from "@/types/tableTypes";
 import React, { createContext, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
 
 export interface TablePanelContextType {
-    setTasks: React.Dispatch<React.SetStateAction<Task[]>>,
     tasks: Task[],
-    setNewTask: React.Dispatch<React.SetStateAction<Task>>,
-    newTask: Task,
-    assigneeFromRedux: Assignee,
+    assignee: Assignee,
     setEditingId: React.Dispatch<React.SetStateAction<number | null>>,
     editingId: number | null,
-    setEditingTask: React.Dispatch<React.SetStateAction<Task | null>>,
-    editingTask: Task | null,
+    // setEditingTask: React.Dispatch<React.SetStateAction<Task | null>>,
+    // editingTask: Task | null,
     setOpenAddTaskModal: React.Dispatch<React.SetStateAction<boolean>>,
     openAddTaskModal: boolean,
     setSelected: React.Dispatch<React.SetStateAction<readonly number[]>>,
@@ -44,15 +43,14 @@ export interface TablePanelContextType {
     openDeleteModal: boolean,
     setOpenAddNewAccountModal: React.Dispatch<React.SetStateAction<boolean>>,
     openAddNewAccountModal: boolean,
-    handleOnSubmit: (e?: React.FormEvent) => Promise<void>,
+    handleOnSubmit: (data: AssigneeFormData) => Promise<void>,
     setNewUser: React.Dispatch<React.SetStateAction<User>>,
     newUser: User,
     handleEdit: (id: number) => void;
     filteredTasks: Task[];
     // Functions
-    finalAssigneeId: Assignee;
-    handleSubmit: (e: React.FormEvent) => Promise<void>;
-    handleSaveEdit: (e?: React.FormEvent) => Promise<void>;
+    handleSubmitToAPI: (data: TaskFormData) => Promise<void>;
+    handleSaveEdit: (data: TaskFormData) => Promise<void>;
     handleDelete: () => Promise<void>;
 }
 
@@ -60,49 +58,15 @@ export const TablePanelContext = createContext<TablePanelContextType | undefined
 
 interface TablePanelProviderProps {
     children: React.ReactNode,
-    itasks: Task[],
-    assignee: Assignee[]
 }
 
-export const TablePanelProvider = ({ children, itasks, assignee }: TablePanelProviderProps) => {
+export const TablePanelProvider = ({ children }: TablePanelProviderProps) => {
     const dispatch = useDispatch()
-    const { assignee: assigneeFromRedux, filter: filterStatus } = useSelector<RootState, RootState['task']>((state) => state.task);
+    const { assignee, filter: filterStatus, tasks: tasks } = useSelector<RootState, RootState['task']>((state) => state.task);
 
-    const finalAssigneeId = assigneeFromRedux ?? assignee
-    let initialTasks: Task[] = [{
-        id: 0,
-        name: '',
-        time: '',
-        title: '',
-        description: '',
-        status: '',
-        priority: '',
-        dueDate: '',
-        tags: '',
-        createdAt: '',
-        action: '',
-        assigneeId: '',
-    }]
-    if (itasks?.length > 0) {
-        initialTasks = itasks.filter((task) => task.assigneeId === finalAssigneeId.id)
-    }
-    const [tasks, setTasks] = useState<Task[]>(initialTasks)
-    const [newTask, setNewTask] = useState<Task>({
-        id: 0,
-        name: '',
-        time: '',
-        title: '',
-        description: '',
-        status: '',
-        priority: '',
-        dueDate: '',
-        tags: '',
-        createdAt: '',
-        action: '',
-        assigneeId: '',
-    });
+    const [newTasks, setNewTasks] = useState<Task[]>([]);
     const [editingId, setEditingId] = useState<number | null>(null);
-    const [editingTask, setEditingTask] = useState<Task | null>(null);
+    // const [editingTask, setEditingTask] = useState<Task | null>(null);
     const [openAddTaskModal, setOpenAddTaskModal] = useState<boolean>(false);
     const [selected, setSelected] = useState<readonly number[]>([]);
     const [order, setOrder] = useState<Order>('asc');
@@ -119,16 +83,16 @@ export const TablePanelProvider = ({ children, itasks, assignee }: TablePanelPro
     })
 
     const handleEdit = (id: number) => {
-        const taskToEdit = tasks.find((task) => task.id === id);
+        const taskToEdit = tasks.find((task: Task) => task.id === id);
         if (taskToEdit) {
             setEditingId(id);
-            setEditingTask({ ...taskToEdit });
+            // setEditingTask({ ...taskToEdit });
         }
     }
 
     const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.checked) {
-            const newSelected = tasks.map((n) => n.id);
+            const newSelected = tasks.map((n: Task) => n.id);
             setSelected(newSelected as readonly number[]);
             return;
         }
@@ -157,12 +121,13 @@ export const TablePanelProvider = ({ children, itasks, assignee }: TablePanelPro
         setPage(newPage);
     };
 
-    const handleOnSubmit = async (e?: React.FormEvent) => {
-        e?.preventDefault();
+    //This also exist in components/index.tsx which is not scope by the provider
+    // This is being used by NoAssigneeDisplay which is scope by the provider
+    const handleOnSubmit = async (formData: AssigneeFormData) => {
         try {
             const payload = {
                 id: uuidv4(),
-                name: newUser.name,
+                name: formData.name,
             }
             const addUserResponse = await fetch(`${BASE_URL}/api/addUser`, {
                 method: 'POST',
@@ -186,21 +151,21 @@ export const TablePanelProvider = ({ children, itasks, assignee }: TablePanelPro
     //memoize states that have the potential to create expensive rendering
     const visibleRows = useMemo(
         () =>
-            [...tasks]
+            [...tasks, ...newTasks]
                 .sort(getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
-        [order, orderBy, page, rowsPerPage, tasks],
+        [order, orderBy, page, rowsPerPage, tasks, newTasks],
     );
 
     //If the user search, filter visibleRows by the search text
     const filteredSearchedTasks = searchText ? visibleRows.filter(
-        (rows) =>
+        (rows: Task) =>
             rows.title.toLocaleLowerCase().includes(searchText.toLocaleLowerCase()) ||
             rows.description.toLocaleLowerCase().includes(searchText.toLocaleLowerCase())
     ) : visibleRows
 
     const filteredTasks = useMemo(() => {
-        return filteredSearchedTasks.filter((task) => {
+        return filteredSearchedTasks.filter((task: Task) => {
             const matchStatus =
                 !filterStatus.status || task.status.toLowerCase() === filterStatus.status;
             const matchPriority =
@@ -217,8 +182,7 @@ export const TablePanelProvider = ({ children, itasks, assignee }: TablePanelPro
         });
     }, [filteredSearchedTasks, filterStatus]);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSubmitToAPI = async (formData: TaskFormData) => {
         try {
             const res = await fetch(`${BASE_URL}/api/addTask`, {
                 method: 'POST',
@@ -226,38 +190,25 @@ export const TablePanelProvider = ({ children, itasks, assignee }: TablePanelPro
                     "Content-Type": 'application/json'
                 },
                 body: JSON.stringify({
-                    title: newTask.title,
-                    description: newTask.description,
-                    status: newTask.status.toUpperCase(),
-                    priority: newTask.priority.toUpperCase(),
-                    dueDate: newTask.dueDate,
-                    tags: newTask.tags.toUpperCase(),
-                    assigneeId: finalAssigneeId.id
+                    ...formData,
+                    assigneeId: assignee.id
                 })
             })
 
             if (res.ok) {
                 const newTasks = await fetch(`${BASE_URL}/api/task`).then(r => r.json());
-                const initialTasks = newTasks.filter((task: Task) => task.assigneeId === finalAssigneeId.id)
-                dispatch(addTask(initialTasks))
-                setTasks(initialTasks);
-                setNewTask({
-                    title: '',
-                    description: '',
-                    dueDate: '',
-                    status: '',
-                    priority: '',
-                    tags: '',
-                });
+                const initialTasks = newTasks.filter((task: Task) => task.assigneeId === assignee.id)
+                dispatch(setTasks(initialTasks))
+                setNewTasks(initialTasks) //For displaying the task immediately in screen
+
             }
         } catch (err) {
             console.error(`Error in adding task: ${err}`)
         }
     }
 
-    const handleSaveEdit = async (e?: React.FormEvent) => {
-        if (e) e.preventDefault();
-        if (!editingId || !editingTask) return;
+    const handleSaveEdit = async (formData: TaskFormData) => {
+        if (!editingId) return;
 
         try {
             const res = await fetch(`${BASE_URL}/api/editTask`, {
@@ -266,24 +217,18 @@ export const TablePanelProvider = ({ children, itasks, assignee }: TablePanelPro
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    id: editingId,
-                    title: editingTask.title,
-                    description: editingTask.description,
-                    dueDate: editingTask.dueDate,
-                    status: editingTask.status.toUpperCase(),
-                    priority: editingTask.priority.toUpperCase(),
-                    tags: editingTask.tags.toUpperCase(),
-                    assigneeId: finalAssigneeId.id
+                    ...formData,
+                    assigneeId: assignee.id
                 })
             })
 
             if (res.ok) {
                 const newTasks = await fetch(`${BASE_URL}/api/task`).then(r => r.json());
-                const initialTasks = newTasks.filter((task: Task) => task.assigneeId === finalAssigneeId.id)
-                dispatch(addTask(initialTasks))
-                setTasks(initialTasks);
+                const filteredTasks = newTasks.filter((task: Task) => task.assigneeId === assignee.id)
+                dispatch(setTasks(filteredTasks))
+                setNewTasks(filteredTasks)
                 setEditingId(null);
-                setEditingTask(null);
+                // setEditingTask(null);
             }
         } catch (err) {
             console.error(`Error in updating task: ${err}`)
@@ -305,9 +250,9 @@ export const TablePanelProvider = ({ children, itasks, assignee }: TablePanelPro
 
             if (res.ok) {
                 const newTasks = await fetch(`${BASE_URL}/api/task`).then(r => r.json());
-                const initialTasks = newTasks.filter((task: Task) => task.assigneeId === finalAssigneeId.id)
-                dispatch(addTask(initialTasks))
-                setTasks(initialTasks);
+                const filteredTasks = newTasks.filter((task: Task) => task.assigneeId === assignee.id)
+                dispatch(setTasks(filteredTasks))
+                setNewTasks(filteredTasks)
             }
         } catch (err) {
             console.error(`Error in removing task: ${err}`)
@@ -315,15 +260,12 @@ export const TablePanelProvider = ({ children, itasks, assignee }: TablePanelPro
     }
 
     const value: TablePanelContextType = {
-        setTasks,
         tasks,
-        setNewTask,
-        newTask,
-        assigneeFromRedux,
+        assignee,
         setEditingId,
         editingId,
-        setEditingTask,
-        editingTask,
+        // setEditingTask,
+        // editingTask,
         setOpenAddTaskModal,
         openAddTaskModal,
         setSelected,
@@ -348,14 +290,13 @@ export const TablePanelProvider = ({ children, itasks, assignee }: TablePanelPro
         openDeleteModal,
         setOpenAddNewAccountModal,
         openAddNewAccountModal,
-        handleOnSubmit,
         setNewUser,
         newUser,
-        handleEdit,
         filteredTasks,
         // Functions
-        finalAssigneeId,
-        handleSubmit,
+        handleEdit,
+        handleOnSubmit,
+        handleSubmitToAPI,
         handleSaveEdit,
         handleDelete,
     };

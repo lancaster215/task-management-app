@@ -1,4 +1,4 @@
-import { DashboardProps, Task } from "@/pages/dashboard";
+import { Task } from "@/pages/dashboard";
 import { Autocomplete, Box, Button, Checkbox, Paper, Stack, Table, TableBody, TableCell, TableContainer, TablePagination, TableRow, TextField } from "@mui/material";
 import React, { useEffect } from "react";
 import AddTaskModal from "../../modal/addTaskModal";
@@ -6,7 +6,7 @@ import EnhancedTableHead from "../../custom_components/EnhancedTableHead";
 import EditTaskModal from "../../modal/editTaskModal";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useDispatch } from "react-redux";
-import { addTask } from "@/store/taskSlice";
+import { setTasks } from "@/store/taskSlice";
 import DeleteTaskModal from "../../modal/deleteTaskModal";
 import { formattedDate } from "@/helpers/dateFormatter";
 import { BASE_URL } from "../../constants/baseURL";
@@ -18,16 +18,11 @@ import { useTablePanelContext } from "@/components/hooks/useTableContext";
 import NoAssigneeDisplay from "./NoAssigneeDisplay";
 import NoTaskDisplay from "./NoTaskDisplay";
 
-interface TablePanelProps extends DashboardProps {
-    openSidebar: boolean
-}
-
-export default function TablePanel({ task: itasks, assignee, openSidebar }: TablePanelProps) {
+export default function TablePanel() {
     const dispatch = useDispatch();
     const {
-        setTasks,
-        tasks,
-        assigneeFromRedux,
+        tasks: tasksFromRedux,
+        assignee: assigneeFromRedux,
         setOpenAddTaskModal,
         openAddTaskModal,
         setSelected,
@@ -55,12 +50,9 @@ export default function TablePanel({ task: itasks, assignee, openSidebar }: Tabl
             try {
                 const res = await fetch(`${BASE_URL}/api/task`);
                 const latestTasks = await res.json();
-                if ((assignee || assigneeFromRedux) && latestTasks) {
-                    const finalAssigneeId = assigneeFromRedux ?? assignee
-                    const initialTasks = latestTasks.filter((task: Task) => task.assigneeId === finalAssigneeId.id)
-
-                    setTasks(initialTasks);
-                    dispatch(addTask(latestTasks))
+                if (assigneeFromRedux && latestTasks) {
+                    const finalTsks = latestTasks.filter((task: Task) => task.assigneeId === assigneeFromRedux.id)
+                    dispatch(setTasks(finalTsks))
                 }
             } catch (err) {
                 console.log("Error:", err)
@@ -68,7 +60,7 @@ export default function TablePanel({ task: itasks, assignee, openSidebar }: Tabl
         };
 
         fetchTasks();
-    }, [assignee, assigneeFromRedux]);
+    }, [assigneeFromRedux]);
 
     useEffect(() => {
         if (!searchText.trim()) return;
@@ -112,9 +104,7 @@ export default function TablePanel({ task: itasks, assignee, openSidebar }: Tabl
     if (assigneeFromRedux.name === '') return <NoAssigneeDisplay />
 
     // No Task for selected assignee
-    if (tasks.length === 0) return <NoTaskDisplay />
-
-    if (!assignee) return;
+    if (tasksFromRedux.length === 0) return <NoTaskDisplay />
 
     return (
         <>
@@ -308,7 +298,7 @@ export default function TablePanel({ task: itasks, assignee, openSidebar }: Tabl
                 <TablePagination
                     rowsPerPageOptions={[5, 10, 25]}
                     component="div"
-                    count={tasks.length}
+                    count={tasksFromRedux.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     onPageChange={handleChangePage}

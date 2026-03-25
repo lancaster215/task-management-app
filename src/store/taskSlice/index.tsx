@@ -3,11 +3,23 @@ import { createSlice } from '@reduxjs/toolkit'
 const taskSlice = createSlice({
   name: 'task',
   initialState: {
-    task: [],
+    task: {
+      title: '',
+      description: '',
+      status: '',
+      priority: '',
+      dueDate: '',
+      createdAt: '',
+      updatedAt: '',
+      tags: '',
+      assigneeId: '',
+    },
+    tasks: [],
     assignee: {
       name: '',
       id: '',
     },
+    assignees: [],
     filter: {
       status: '',
       priority: '',
@@ -17,11 +29,17 @@ const taskSlice = createSlice({
     },
   },
   reducers: {
-    addTask: (state, action) => {
+    setTask: (state, action) => {
       state.task = action.payload
+    },
+    setTasks: (state, action) => {
+      state.tasks = action.payload
     },
     setAssignee: (state, action) => {
       state.assignee = action.payload
+    },
+    setAssignees: (state, action) => {
+      state.assignees = action.payload
     },
     setFilter: (state, action) => {
       console.log('redux', action.payload.type, action.payload.value)
@@ -57,5 +75,5 @@ const taskSlice = createSlice({
   }
 })
 
-export const { addTask, setAssignee, setFilter, clearFilter } = taskSlice.actions
+export const { setTask, setTasks, setAssignee, setFilter, clearFilter, setAssignees } = taskSlice.actions
 export default taskSlice.reducer;

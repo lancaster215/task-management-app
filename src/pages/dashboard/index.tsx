@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Dashboard from "@/components";
 import { BASE_URL } from '@/components/constants/baseURL';
+import { useDispatch } from 'react-redux';
+import { setAssignees, setTasks } from '@/store/taskSlice';
 
 export type Task = {
   id?: number,
@@ -29,9 +31,15 @@ export type DashboardProps = {
 }
 
 const Home: React.FC<DashboardProps> = ({ task, assignee }) => {
-  console.log(task, assignee, 'dashboard')
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    dispatch(setTasks(task))
+    dispatch(setAssignees(assignee))
+  }, [task])
+
   return (
-    <Dashboard task={task} assignee={assignee} />
+    <Dashboard />
   )
 }
 

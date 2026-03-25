@@ -18,7 +18,6 @@ function TableFunctionList() {
     };
 
     const handleDateFilter = (value: string, type: string) => {
-        console.log(value, type, dateFilter)
         setDateFilter({
             ...dateFilter,
             [type]: value
