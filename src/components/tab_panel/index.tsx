@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { Box, Tab, Tabs } from "@mui/material";
 import { CustomTabPanel } from "..";
 import TablePanel from "./TablePanel";
@@ -19,10 +19,10 @@ interface TabPanleInterface extends DashboardProps {
 }
 
 function TabPanel({ task, assignee: preRenderedAssignee, sidebarWidth, openSidebar }: TabPanleInterface) {
-	const tabRef = useRef<number>(0);
+	const [tabValue, setTabValue] = useState<number>(0)
 
 	const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-		tabRef.current = newValue;
+		setTabValue(newValue)
 	};
 
 	return (
@@ -49,21 +49,21 @@ function TabPanel({ task, assignee: preRenderedAssignee, sidebarWidth, openSideb
 					backgroundColor: 'black',
 					borderRadius: '5px'
 				}}>
-				<Tabs value={tabRef.current} onChange={handleChange} aria-label="tabs">
+				<Tabs value={tabValue} onChange={handleChange} aria-label="tabs">
 					<Tab label="Table" {...a11yProps(0)} sx={{ color: 'white' }} />
 					<Tab label="Kanban" {...a11yProps(1)} sx={{ color: 'white' }} />
 					<Tab label="Graphs" {...a11yProps(2)} sx={{ color: 'white' }} />
 				</Tabs>
 			</Box>
-			<CustomTabPanel value={tabRef.current} index={0}>
+			<CustomTabPanel value={tabValue} index={0}>
 				<TablePanelProvider itasks={task} assignee={preRenderedAssignee ?? []}>
 					<TablePanel openSidebar={openSidebar} task={task} assignee={preRenderedAssignee ?? []} />
 				</TablePanelProvider>
 			</CustomTabPanel>
-			<CustomTabPanel value={tabRef.current} index={1}>
+			<CustomTabPanel value={tabValue} index={1}>
 				Item Two
 			</CustomTabPanel>
-			<CustomTabPanel value={tabRef.current} index={2}>
+			<CustomTabPanel value={tabValue} index={2}>
 				<GraphPanel />
 			</CustomTabPanel>
 		</Box>
