@@ -8,7 +8,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
         if (req.method === 'POST') {
             const { selected } = req.body;
-            console.log(selected, 'selected')
+
             if (!selected) {
                 return res.status(400).json({ error: "ID is required." });
             }

@@ -1,10 +1,9 @@
 import { Box, Button, Modal, Paper, Table, TableBody, TableCell, TableContainer, TablePagination, TableRow, Typography } from "@mui/material"
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Data, Order } from '@/types/tableTypes';
 import EnhancedTableHead from "../custom_components/EnhancedTableHead";
 import { useDispatch, useSelector } from "react-redux";
 import { setAssignee } from "@/store/taskSlice";
-import { Assignee } from "@/pages/dashboard";
 import { RootState } from "@/store";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { User } from "..";
@@ -18,6 +17,8 @@ interface AssigneeTableProps {
 export default function AssigneeTable(props: AssigneeTableProps) {
     const dispatch = useDispatch();
     const { assignee, assignees } = useSelector<RootState, RootState['task']>((state) => state.task);
+
+    useEffect(() => { }, [assignee, assignees]);
 
     const [order, setOrder] = useState<Order>('asc');
     const [orderBy, setOrderBy] = useState<keyof Data | 'action'>('status');

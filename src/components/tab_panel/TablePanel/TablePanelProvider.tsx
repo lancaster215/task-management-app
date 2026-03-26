@@ -6,9 +6,9 @@ import { formattedDate } from "@/helpers/dateFormatter";
 import { getComparator } from "@/helpers/getComparator";
 import { Assignee, Task } from "@/pages/dashboard";
 import { RootState } from "@/store";
-import { setTasks, setAssignee } from "@/store/taskSlice";
+import { setTasks, setAssignee, setAssignees } from "@/store/taskSlice";
 import { Data, Order } from "@/types/tableTypes";
-import React, { createContext, useMemo, useState } from "react";
+import React, { createContext, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
 
@@ -43,7 +43,7 @@ export interface TablePanelContextType {
     openDeleteModal: boolean,
     setOpenAddNewAccountModal: React.Dispatch<React.SetStateAction<boolean>>,
     openAddNewAccountModal: boolean,
-    handleOnSubmit: (data: AssigneeFormData) => Promise<void>,
+    handleAddNewAssigne: (data: AssigneeFormData) => Promise<void>,
     setNewUser: React.Dispatch<React.SetStateAction<User>>,
     newUser: User,
     handleEdit: (id: number) => void;
@@ -62,7 +62,10 @@ interface TablePanelProviderProps {
 
 export const TablePanelProvider = ({ children }: TablePanelProviderProps) => {
     const dispatch = useDispatch()
-    const { assignee, filter: filterStatus, tasks: tasks } = useSelector<RootState, RootState['task']>((state) => state.task);
+    const { assignee, filter: filterStatus, tasks } = useSelector<RootState, RootState['task']>((state) => state.task);
+
+    //For auto updating states from redux
+    useEffect(() => { }, [assignee, filterStatus, tasks])
 
     const [newTasks, setNewTasks] = useState<Task[]>([]);
     const [editingId, setEditingId] = useState<number | null>(null);
@@ -123,7 +126,7 @@ export const TablePanelProvider = ({ children }: TablePanelProviderProps) => {
 
     //This also exist in components/index.tsx which is not scope by the provider
     // This is being used by NoAssigneeDisplay which is scope by the provider
-    const handleOnSubmit = async (formData: AssigneeFormData) => {
+    const handleAddNewAssigne = async (formData: AssigneeFormData) => {
         try {
             const payload = {
                 id: uuidv4(),
@@ -142,16 +145,21 @@ export const TablePanelProvider = ({ children }: TablePanelProviderProps) => {
             if (addUserData.user) {
                 dispatch(setAssignee(addUserData.user));
             }
+
+            const userResponse = await fetch(`${BASE_URL}/api/users`).then(r => r.json());
+            dispatch(setAssignees(userResponse))
         } catch (err) {
             console.error(`Error in adding user: ${err}`)
         }
         setOpenAddNewAccountModal(!openAddNewAccountModal)
     }
 
+    const gatheredRows = [...new Set([...tasks, ...newTasks])]
+
     //memoize states that have the potential to create expensive rendering
     const visibleRows = useMemo(
         () =>
-            [...tasks, ...newTasks]
+            gatheredRows
                 .sort(getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
         [order, orderBy, page, rowsPerPage, tasks, newTasks],
@@ -295,7 +303,7 @@ export const TablePanelProvider = ({ children }: TablePanelProviderProps) => {
         filteredTasks,
         // Functions
         handleEdit,
-        handleOnSubmit,
+        handleAddNewAssigne,
         handleSubmitToAPI,
         handleSaveEdit,
         handleDelete,

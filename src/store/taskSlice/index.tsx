@@ -42,7 +42,6 @@ const taskSlice = createSlice({
       state.assignees = action.payload
     },
     setFilter: (state, action) => {
-      console.log('redux', action.payload.type, action.payload.value)
       switch (action.payload.type) {
         case 'status':
           state.filter.status = action.payload.value

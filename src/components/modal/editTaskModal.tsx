@@ -32,7 +32,6 @@ export default function EditTaskModal() {
         }
     });
     const onSubmit = (data: TaskFormData) => {
-        console.log('onSubmit', data)
         handleSaveEdit(data)
         setOpenAddTaskModal(false);
     };

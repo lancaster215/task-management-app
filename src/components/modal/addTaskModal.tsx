@@ -36,7 +36,6 @@ export default function AddTaskModal() {
     });
 
     const onSubmit = (data: TaskFormData) => {
-        console.log('onSubmit', data)
         handleSubmitToAPI(data)
         setOpenAddTaskModal(false);
     };

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import { DashboardProps } from '@/pages/dashboard';
 import { v4 as uuidv4 } from "uuid";
@@ -50,7 +50,9 @@ export default function Dashboard() {
   const [openSidebar, setOpenSideBar] = useState(false);
   const [openAddNewAssignee, setOpenAddNewAssignee] = useState<boolean>(false);
 
-  const handleOnSubmit = async (formData: AssigneeFormData) => {
+  useEffect(() => { }, [assignees])
+
+  const handleAddNewAssigne = async (formData: AssigneeFormData) => {
     try {
       const payload = {
         id: uuidv4(),
@@ -69,6 +71,8 @@ export default function Dashboard() {
       if (addUserData.user) {
         dispatch(setAssignee(addUserData.user));
       }
+      const userResponse = await fetch(`${BASE_URL}/api/users`).then(r => r.json());
+      dispatch(setAssignees(userResponse))
     } catch (err) {
       console.error(`Error in adding user: ${err}`)
     }
@@ -108,7 +112,7 @@ export default function Dashboard() {
       <AddNewAssigneeModal
         openAddNewAccountModal={openAddNewAccountModal}
         setOpenAddNewAccountModal={setOpenAddNewAccountModal}
-        handleOnSubmit={handleOnSubmit}
+        handleAddNewAssigne={handleAddNewAssigne}
         onNoButton={() => setOpenAddNewAccountModal(!openAddNewAccountModal)}
       />
 

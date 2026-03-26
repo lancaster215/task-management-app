@@ -16,10 +16,10 @@ type AddNewAssigneeModalProps = {
     openAddNewAccountModal: boolean,
     setOpenAddNewAccountModal: (open: boolean) => void,
     onNoButton: (e: React.FormEvent) => void,
-    handleOnSubmit: (data: AssigneeFormData) => Promise<void>
+    handleAddNewAssigne: (data: AssigneeFormData) => Promise<void>
 }
 
-export default function AddNewAssigneeModal({ openAddNewAccountModal, setOpenAddNewAccountModal, handleOnSubmit, onNoButton }: AddNewAssigneeModalProps) {
+export default function AddNewAssigneeModal({ openAddNewAccountModal, setOpenAddNewAccountModal, handleAddNewAssigne, onNoButton }: AddNewAssigneeModalProps) {
     const { control, handleSubmit, formState: { errors } } = useForm<AssigneeFormData>({
         resolver: zodResolver(taskSchema),
         defaultValues: {
@@ -28,7 +28,7 @@ export default function AddNewAssigneeModal({ openAddNewAccountModal, setOpenAdd
     });
 
     const onSubmit = (data: AssigneeFormData) => {
-        handleOnSubmit(data)
+        handleAddNewAssigne(data)
         setOpenAddNewAccountModal(!openAddNewAccountModal)
     };
     return (

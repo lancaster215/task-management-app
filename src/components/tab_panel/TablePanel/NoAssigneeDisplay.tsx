@@ -4,7 +4,7 @@ import { useTablePanelContext } from "@/components/hooks/useTableContext";
 import { Box, Button } from "@mui/material";
 
 export default function NoAssigneeDisplay() {
-    const { openAddNewAccountModal, setOpenAddNewAccountModal, handleOnSubmit } = useTablePanelContext();
+    const { openAddNewAccountModal, setOpenAddNewAccountModal, handleAddNewAssigne } = useTablePanelContext();
     return (
         <Box sx={{ alignItems: 'center', justifyContent: 'center', display: 'flex', height: '100vh' }}>
             <Box sx={{ textAlign: 'center' }}>
@@ -12,7 +12,7 @@ export default function NoAssigneeDisplay() {
                     openAddNewAccountModal={openAddNewAccountModal}
                     setOpenAddNewAccountModal={setOpenAddNewAccountModal}
                     onNoButton={() => setOpenAddNewAccountModal(!openAddNewAccountModal)}
-                    handleOnSubmit={handleOnSubmit}
+                    handleAddNewAssigne={handleAddNewAssigne}
                 />
                 <Button
                     variant="contained"
