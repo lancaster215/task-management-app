@@ -1,15 +1,12 @@
 import { Task } from "@/pages/dashboard";
 import { Autocomplete, Box, Button, Checkbox, Paper, Stack, Table, TableBody, TableCell, TableContainer, TablePagination, TableRow, TextField } from "@mui/material";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import AddTaskModal from "../../modal/addTaskModal";
 import EnhancedTableHead from "../../custom_components/EnhancedTableHead";
 import EditTaskModal from "../../modal/editTaskModal";
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useDispatch } from "react-redux";
-import { setTasks } from "@/store/taskSlice";
 import DeleteTaskModal from "../../modal/deleteTaskModal";
 import { formattedDate } from "@/helpers/dateFormatter";
-import { BASE_URL } from "../../constants/baseURL";
 import normalizeText from "@/helpers/noramlizeText";
 import { useStatusColor } from "../../hooks/useStatusColor";
 import { usePriorityColor } from "../../hooks/usePriorityColor";
@@ -17,12 +14,11 @@ import { useTagsColor } from "../../hooks/useTagsColor";
 import { useTablePanelContext } from "@/components/hooks/useTableContext";
 import NoAssigneeDisplay from "./NoAssigneeDisplay";
 import NoTaskDisplay from "./NoTaskDisplay";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
 
 export default function TablePanel() {
-    const dispatch = useDispatch();
     const {
-        tasks: tasksFromRedux,
-        assignee: assigneeFromRedux,
         setOpenAddTaskModal,
         openAddTaskModal,
         setSelected,
@@ -44,23 +40,7 @@ export default function TablePanel() {
         handleEdit,
         filteredTasks,
     } = useTablePanelContext();
-
-    useEffect(() => {
-        const fetchTasks = async () => {
-            try {
-                const res = await fetch(`${BASE_URL}/api/task`);
-                const latestTasks = await res.json();
-                if (assigneeFromRedux && latestTasks) {
-                    const finalTsks = latestTasks.filter((task: Task) => task.assigneeId === assigneeFromRedux.id)
-                    dispatch(setTasks(finalTsks))
-                }
-            } catch (err) {
-                console.log("Error:", err)
-            }
-        };
-
-        fetchTasks();
-    }, [assigneeFromRedux]);
+    const { assignee } = useSelector<RootState, RootState['assignee']>((state) => state.assignee);
 
     useEffect(() => {
         if (!searchText.trim()) return;
@@ -75,7 +55,9 @@ export default function TablePanel() {
         return () => clearTimeout(delayDebounce);
     }, [searchText]);
 
-
+    const filterByAssigneeId = useMemo(() =>
+        filteredTasks.filter((filteredTask: Task) => filteredTask.assigneeId === assignee.id)
+        , [filteredTasks, assignee])
 
     const handleClick = (id: number) => {
         const selectedIndex = selected.indexOf(id);
@@ -101,10 +83,10 @@ export default function TablePanel() {
     }
 
     // No assignee
-    if (assigneeFromRedux.name === '') return <NoAssigneeDisplay />
+    if (assignee.name === '') return <NoAssigneeDisplay />
 
     // No Task for selected assignee
-    if (tasksFromRedux.length === 0) return <NoTaskDisplay />
+    if (filteredTasks.length === 0) return <NoTaskDisplay />
 
     return (
         <>
@@ -200,7 +182,7 @@ export default function TablePanel() {
                             header='task'
                         />
                         <TableBody>
-                            {filteredTasks.map((task, id) => {
+                            {filterByAssigneeId.map((task) => {
                                 const isItemSelected = task.id ? selected.includes(task.id) : false
                                 return (
                                     <TableRow
@@ -209,7 +191,7 @@ export default function TablePanel() {
                                         role="checkbox"
                                         aria-checked={isItemSelected}
                                         tabIndex={-1}
-                                        key={id}
+                                        key={task.id}
                                         selected={isItemSelected}
                                         sx={{ cursor: 'pointer' }}
                                     >
@@ -254,8 +236,8 @@ export default function TablePanel() {
                                             //     text: formattedDate(task.createdAt),
                                             //     color: 'black'
                                             // }
-                                        ].map((text) =>
-                                            <TableCell align={text.withBg ? "center" : "left"}>
+                                        ].map((text, id) =>
+                                            <TableCell key={id} align={text.withBg ? "center" : "left"}>
                                                 <Box
                                                     sx={[
                                                         {
@@ -298,7 +280,7 @@ export default function TablePanel() {
                 <TablePagination
                     rowsPerPageOptions={[5, 10, 25]}
                     component="div"
-                    count={tasksFromRedux.length}
+                    count={filteredTasks.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     onPageChange={handleChangePage}

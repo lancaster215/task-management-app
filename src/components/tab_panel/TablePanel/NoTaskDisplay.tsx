@@ -7,7 +7,7 @@ import { RootState } from '@/store';
 
 export default function NoTaskDisplay() {
     const { openAddTaskModal, setOpenAddTaskModal } = useTablePanelContext();
-    const { assignee } = useSelector<RootState, RootState['task']>((state) => state.task);
+    const { assignee } = useSelector<RootState, RootState['assignee']>((state) => state.assignee);
     return (
         <Box sx={{ alignItems: 'center', justifyContent: 'center', display: 'flex', height: '100vh' }}>
             <Box sx={{ textAlign: 'center' }}>

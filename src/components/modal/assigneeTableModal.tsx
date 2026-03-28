@@ -3,10 +3,12 @@ import React, { useEffect, useState } from "react";
 import { Data, Order } from '@/types/tableTypes';
 import EnhancedTableHead from "../custom_components/EnhancedTableHead";
 import { useDispatch, useSelector } from "react-redux";
-import { setAssignee } from "@/store/taskSlice";
+import { setAssignee } from "@/store/assigneeSlice";
 import { RootState } from "@/store";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { User } from "..";
+import handleGetAssignees from "@/api/assignee/handleGetAssignees";
+import { useQuery } from "@tanstack/react-query";
 
 interface AssigneeTableProps {
     openAddNewAssignee: boolean,
@@ -16,16 +18,17 @@ interface AssigneeTableProps {
 
 export default function AssigneeTable(props: AssigneeTableProps) {
     const dispatch = useDispatch();
-    const { assignee, assignees } = useSelector<RootState, RootState['task']>((state) => state.task);
 
-    useEffect(() => { }, [assignee, assignees]);
+    const { data: assignees, isLoading } = useQuery({
+        queryKey: ['assignees'],
+        queryFn: handleGetAssignees
+    });
 
     const [order, setOrder] = useState<Order>('asc');
     const [orderBy, setOrderBy] = useState<keyof Data | 'action'>('status');
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [page, setPage] = useState(0);
-    const [assigneeId, setAssigneeId] = useState<string>(assignee.id);
-
+    const [assigneeId, setAssigneeId] = useState<string>('');
 
     const handleRequestSort = (
         event: React.MouseEvent<unknown>,
@@ -80,7 +83,7 @@ export default function AssigneeTable(props: AssigneeTableProps) {
                             />
                             {/* <Divider sx={{mt: 1}} /> */}
                             <TableBody>
-                                {assignees.map((assignee: User, id) => {
+                                {assignees.map((assignee: User) => {
                                     return (
                                         <TableRow
                                             hover
@@ -88,7 +91,7 @@ export default function AssigneeTable(props: AssigneeTableProps) {
                                             role="checkbox"
                                             // aria-checked={isItemSelected}
                                             tabIndex={-1}
-                                            key={id}
+                                            key={assignee.id}
                                             // selected={isItemSelected}
                                             sx={{ cursor: 'pointer' }}
                                         >

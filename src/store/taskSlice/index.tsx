@@ -15,11 +15,6 @@ const taskSlice = createSlice({
       assigneeId: '',
     },
     tasks: [],
-    assignee: {
-      name: '',
-      id: '',
-    },
-    assignees: [],
     filter: {
       status: '',
       priority: '',
@@ -31,15 +26,6 @@ const taskSlice = createSlice({
   reducers: {
     setTask: (state, action) => {
       state.task = action.payload
-    },
-    setTasks: (state, action) => {
-      state.tasks = action.payload
-    },
-    setAssignee: (state, action) => {
-      state.assignee = action.payload
-    },
-    setAssignees: (state, action) => {
-      state.assignees = action.payload
     },
     setFilter: (state, action) => {
       switch (action.payload.type) {
@@ -74,5 +60,5 @@ const taskSlice = createSlice({
   }
 })
 
-export const { setTask, setTasks, setAssignee, setFilter, clearFilter, setAssignees } = taskSlice.actions
+export const { setTask, setFilter, clearFilter } = taskSlice.actions
 export default taskSlice.reducer;

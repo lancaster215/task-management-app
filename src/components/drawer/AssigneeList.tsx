@@ -1,10 +1,7 @@
-import React, { useEffect } from 'react';
-import { Assignee } from "@/pages/dashboard";
+import React from 'react';
 import { Avatar, Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
-import { useRouter } from "next/router";
 import PersonAdd from '@mui/icons-material/PersonAdd';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/store';
+import { useGetAssignees } from '../hooks/api/assignee/useGetAssignees';
 
 
 interface AssigneeListProps {
@@ -20,15 +17,15 @@ function AssigneeList({
     setOpenAddNewAssignee,
     openAddNewAssignee,
 }: AssigneeListProps) {
-    const { assignee, assignees } = useSelector<RootState, RootState['task']>((state) => state.task);
+    const { data: assignees, isLoading } = useGetAssignees()
 
     const sideBarItems = [
         {
-            title: assignee.name ? assignee.name : "Select Assigee",
+            title: "Select Assigee",
             link: () => setOpenAddNewAssignee(!openAddNewAssignee),
             withAvatar: true,
             avatar: <Avatar />,
-            disabled: assignees.length === 0
+            disabled: isLoading ? false : assignees.length === 0
         },
 
         {

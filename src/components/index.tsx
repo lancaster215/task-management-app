@@ -1,15 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Box from '@mui/material/Box';
-import { DashboardProps } from '@/pages/dashboard';
-import { v4 as uuidv4 } from "uuid";
-import { RootState } from "@/store";
 import AddNewAssigneeModal, { AssigneeFormData } from './modal/addNewAssignee';
-import { useDispatch, useSelector } from 'react-redux';
-import { setAssignee, setAssignees } from '@/store/taskSlice';
-import { BASE_URL } from './constants/baseURL';
 import TabPanel from './tab_panel';
 import SideDrawer from './drawer';
-import AssigneeTable from './modal/selectAssignee';
+import AssigneeTable from './modal/assigneeTableModal';
+import handleRemoveAssignee from '@/api/assignee/handleRemoveAssignee';
+import handleGetAssignees from '@/api/assignee/handleGetAssignees';
+import { useAddAssignee } from './hooks/api/assignee/useAddAssignee';
+import { useQuery } from '@tanstack/react-query';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -43,60 +41,27 @@ const SIDEBAR_WIDTH = 280;
 
 
 export default function Dashboard() {
-  const { assignees } = useSelector((state: RootState) => state.task);
+  const { mutateAsync: addAssignee, isPending } = useAddAssignee();
+  const { data: assignees, isLoading } = useQuery({
+    queryKey: ['assignees'],
+    queryFn: handleGetAssignees
+  });
 
-  const dispatch = useDispatch();
   const [openAddNewAccountModal, setOpenAddNewAccountModal] = useState<boolean>(false);
   const [openSidebar, setOpenSideBar] = useState(false);
   const [openAddNewAssignee, setOpenAddNewAssignee] = useState<boolean>(false);
 
-  useEffect(() => { }, [assignees])
-
   const handleAddNewAssigne = async (formData: AssigneeFormData) => {
     try {
-      const payload = {
-        id: uuidv4(),
-        name: formData.name,
-      }
-      const addUserResponse = await fetch(`${BASE_URL}/api/addUser`, {
-        method: 'POST',
-        headers: {
-          "Content-Type": 'application/json'
-        },
-        body: JSON.stringify(payload)
-      })
-
-      const addUserData = await addUserResponse.json();
-
-      if (addUserData.user) {
-        dispatch(setAssignee(addUserData.user));
-      }
-      const userResponse = await fetch(`${BASE_URL}/api/users`).then(r => r.json());
-      dispatch(setAssignees(userResponse))
-    } catch (err) {
-      console.error(`Error in adding user: ${err}`)
+      await addAssignee(formData);
+      setOpenAddNewAccountModal(false);
+    } catch (error) {
+      // Error is already handled in the hook, but you can add UI toasts here
     }
-    setOpenAddNewAccountModal(!openAddNewAccountModal)
   }
 
   const handleDelete = async (selected: string) => {
-    try {
-      const res = await fetch(`${BASE_URL}/api/removeUser`, {
-        method: 'POST',
-        headers: {
-          "Content-Type": 'application/json'
-        },
-        body: JSON.stringify({ selected }) //array
-      })
-
-      if (res.ok) {
-        const newUser = await fetch(`${BASE_URL}/api/users`).then(r => r.json());
-        const newAssignee = newUser.filter((task: User) => task.id === selected)
-        dispatch(setAssignees(newAssignee))
-      }
-    } catch (err) {
-      console.error(`Error in removing task: ${err}`)
-    }
+    await handleRemoveAssignee(selected)
   }
 
   return (
