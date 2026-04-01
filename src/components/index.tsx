@@ -1,9 +1,7 @@
 import React, { Suspense, useState } from 'react';
 import Box from '@mui/material/Box';
-import AddNewAssigneeModal, { AssigneeFormData } from './modal/addNewAssignee';
 import TabPanel from './tab_panel';
 import SideDrawer from './drawer';
-import AssigneeTable from './modal/assigneeTableModal';
 import handleGetAssignees from '@/api/assignee/handleGetAssignees';
 import { useAddAssignee } from './hooks/api/assignee/useAddAssignee';
 import { useQuery } from '@tanstack/react-query';
@@ -12,6 +10,8 @@ import { useRemoveAssignee } from './hooks/api/assignee/useRemoveAssignee';
 import { SIDEBAR_WIDTH } from './constants/sidebarItems';
 import { setAssignee } from '@/store/assigneeSlice';
 import { useDispatch } from 'react-redux';
+import AddNewAssigneeModal, { AssigneeFormData } from './modal/AddNewAssigneeModal';
+import AssigneeTable from './modal/AssigneeTableModal';
 
 interface TabPanelProps {
   children?: React.ReactNode;

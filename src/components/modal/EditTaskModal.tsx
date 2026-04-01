@@ -4,7 +4,7 @@ import styles from "../styles";
 import { useTablePanelContext } from '../hooks/useTableContext';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { TaskFormData, taskSchema } from './addTaskModal';
+import { TaskFormData, taskSchema } from './AddTaskModal';
 import { formattedDate } from '@/helpers/dateFormatter';
 
 export default function EditTaskModal() {

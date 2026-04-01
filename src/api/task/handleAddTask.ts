@@ -1,5 +1,5 @@
 import { BASE_URL } from "@/components/constants/baseURL";
-import { TaskFormData } from "@/components/modal/addTaskModal";
+import { TaskFormData } from "@/components/modal/AddTaskModal";
 
 import { Assignee } from "@/pages/dashboard";
 

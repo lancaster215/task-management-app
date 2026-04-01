@@ -3,8 +3,8 @@ import { useAddTask } from "@/components/hooks/api/tasks/useAddTask";
 import { useEditTask } from "@/components/hooks/api/tasks/useEditTask";
 import { useGetTasks } from "@/components/hooks/api/tasks/useGetTasks";
 import { useRemoveTask } from "@/components/hooks/api/tasks/useRemoveTask";
-import { AssigneeFormData } from "@/components/modal/addNewAssignee";
-import { TaskFormData } from "@/components/modal/addTaskModal";
+import { AssigneeFormData } from "@/components/modal/AddNewAssigneeModal";
+import { TaskFormData } from "@/components/modal/AddTaskModal";
 import { formattedDate } from "@/helpers/dateFormatter";
 import { getComparator } from "@/helpers/getComparator";
 import { Task } from "@/pages/dashboard";
@@ -171,7 +171,6 @@ export const TablePanelProvider = ({ children }: TablePanelProviderProps) => {
     }
 
     const handleSaveEdit = async (formData: TaskFormData) => {
-        console.log('handleSaveEdit', formData)
         if (!taskToEdit) return;
         try {
             await editTask({ formData, assignee })

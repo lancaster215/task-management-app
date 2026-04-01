@@ -1,11 +1,11 @@
 import { Task } from "@/pages/dashboard";
 import { Autocomplete, Box, Button, Checkbox, Paper, Stack, Table, TableBody, TableCell, TableContainer, TablePagination, TableRow, TextField } from "@mui/material";
 import React, { useEffect, useMemo } from "react";
-import AddTaskModal from "../../modal/addTaskModal";
+import AddTaskModal from "../../modal/AddTaskModal";
 import EnhancedTableHead from "../../custom_components/EnhancedTableHead";
-import EditTaskModal from "../../modal/editTaskModal";
+import EditTaskModal from "@/components/modal/EditTaskModal";
 import DeleteIcon from '@mui/icons-material/Delete';
-import DeleteTaskModal from "../../modal/deleteTaskModal";
+import DeleteTaskModal from "@/components/modal/DeleteTaskModal";
 import { formattedDate } from "@/helpers/dateFormatter";
 import normalizeText from "@/helpers/noramlizeText";
 import { useStatusColor } from "../../hooks/useStatusColor";
@@ -86,7 +86,7 @@ export default function TablePanel() {
     const handleAutocompleteInputChange = (event: React.SyntheticEvent, value: string) => {
         setSearchText(value);
     }
-    console.log('TablePanel', isLoadingTasks, addTaskPending, assignee, tasks)
+
     if (isLoadingTasks || addTaskPending) {
         return <Loading />
     } else {

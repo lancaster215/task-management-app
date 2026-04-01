@@ -1,5 +1,5 @@
 import { BASE_URL } from "@/components/constants/baseURL";
-import { AssigneeFormData } from "@/components/modal/addNewAssignee";
+import { AssigneeFormData } from "@/components/modal/AddNewAssigneeModal";
 
 export const handleAddAssignee = async (formData: AssigneeFormData) => {
     const payload = {
