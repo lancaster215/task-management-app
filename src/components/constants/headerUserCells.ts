@@ -6,6 +6,7 @@ export const headerUserCells: readonly HeadCell[] = [
         numeric: false,
         disablePadding: false,
         label: 'Assignee Name',
+        minWidth: 100,
     },
     {
         id: 'action',

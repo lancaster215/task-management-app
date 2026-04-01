@@ -1,36 +1,42 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box, Button, InputLabel, MenuItem, Modal, Select, TextField } from "@mui/material";
 import styles from "../styles";
 import { useTablePanelContext } from '../hooks/useTableContext';
 import { Controller, useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { TaskFormData } from './addTaskModal';
-
-const taskSchema = z.object({
-    title: z.string().min(1, "Title is required"),
-    description: z.string().min(1, "Description is required"),
-    dueDate: z.string().min(1, "Date is required"),
-    priority: z.enum(["LOW", "MEDIUM", "HIGH"]),
-    status: z.enum(["TODO", "IN_PROGRESS", "DONE"]),
-    tags: z.enum(["FEATURE", "BUG", "ENHANCEMENT"])
-});
-
+import { TaskFormData, taskSchema } from './addTaskModal';
+import { formattedDate } from '@/helpers/dateFormatter';
 
 export default function EditTaskModal() {
-    const { editingId, setEditingId, setOpenAddTaskModal, handleSaveEdit } = useTablePanelContext();
+    const { taskToEdit, setTaskToEdit, setOpenAddTaskModal, handleSaveEdit } = useTablePanelContext();
 
-    const { control, handleSubmit, formState: { errors } } = useForm<TaskFormData>({
+    const { control, reset, handleSubmit, formState: { errors } } = useForm<TaskFormData>({
         resolver: zodResolver(taskSchema),
         defaultValues: {
+            id: null,
             title: '',
             description: '',
             dueDate: '',
             priority: 'LOW',
             status: 'TODO',
             tags: 'FEATURE'
-        }
+        },
     });
+
+    useEffect(() => {
+        if (taskToEdit) {
+            reset({
+                id: taskToEdit.id,
+                title: taskToEdit.title,
+                description: taskToEdit.description,
+                dueDate: formattedDate(taskToEdit.dueDate),
+                priority: taskToEdit.priority,
+                status: taskToEdit.status,
+                tags: taskToEdit.tags,
+            });
+        }
+    }, [taskToEdit, reset]);
+
     const onSubmit = (data: TaskFormData) => {
         handleSaveEdit(data)
         setOpenAddTaskModal(false);
@@ -38,13 +44,22 @@ export default function EditTaskModal() {
 
     return (
         <Modal
-            open={editingId !== null}
-            onClose={() => setEditingId(null)}
+            open={taskToEdit !== null}
+            onClose={() => setTaskToEdit(null)}
             aria-labelledby="edit-task-modal"
             aria-describedby="editing-task"
             sx={{ justifyContent: 'center', display: 'flex', alignItems: 'center' }}
         >
-            <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={styles.formBox}>
+            <Box
+                component="form"
+                onSubmit={
+                    handleSubmit(
+                        onSubmit,
+                        (err) => console.log('FORM ERRORS', err)
+                    )
+                }
+                sx={styles.formBox}
+            >
                 <Controller
                     name="title"
                     control={control}
@@ -99,7 +114,10 @@ export default function EditTaskModal() {
                     name="priority"
                     control={control}
                     render={({ field }) => (
-                        <Select {...field} fullWidth>
+                        <Select
+                            {...field}
+                            fullWidth
+                        >
                             <MenuItem value="LOW">Low</MenuItem>
                             <MenuItem value="MEDIUM">Medium</MenuItem>
                             <MenuItem value="HIGH">High</MenuItem>
@@ -113,7 +131,10 @@ export default function EditTaskModal() {
                     name="status"
                     control={control}
                     render={({ field }) => (
-                        <Select {...field} fullWidth>
+                        <Select
+                            {...field}
+                            fullWidth
+                        >
                             <MenuItem value="TODO">Todo</MenuItem>
                             <MenuItem value="IN_PROGRESS">In Progress</MenuItem>
                             <MenuItem value="DONE">Done</MenuItem>
@@ -127,7 +148,10 @@ export default function EditTaskModal() {
                     name="tags"
                     control={control}
                     render={({ field }) => (
-                        <Select {...field} fullWidth>
+                        <Select
+                            {...field}
+                            fullWidth
+                        >
                             <MenuItem value="FEATURE">Feature</MenuItem>
                             <MenuItem value="BUG">Bug</MenuItem>
                             <MenuItem value="ENHANCEMENT">Enhancement</MenuItem>
@@ -135,7 +159,7 @@ export default function EditTaskModal() {
                     )}
                 />
 
-                <Button type="submit" variant="contained">Add New Task</Button>
+                <Button type="submit" variant="contained">Save Changes</Button>
             </Box>
         </Modal>
     )

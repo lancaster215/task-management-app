@@ -1,18 +1,17 @@
-import { Box, Button, Modal, Paper, Table, TableBody, TableCell, TableContainer, TablePagination, TableRow, Typography } from "@mui/material"
-import React, { useEffect, useState } from "react";
+import { Box, Button, Modal, Paper, Table, TableBody, TableCell, TableContainer, TablePagination, TableRow } from "@mui/material"
+import React, { useState } from "react";
 import { Data, Order } from '@/types/tableTypes';
 import EnhancedTableHead from "../custom_components/EnhancedTableHead";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setAssignee } from "@/store/assigneeSlice";
-import { RootState } from "@/store";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { User } from "..";
 import handleGetAssignees from "@/api/assignee/handleGetAssignees";
 import { useQuery } from "@tanstack/react-query";
 
 interface AssigneeTableProps {
-    openAddNewAssignee: boolean,
-    setOpenAddNewAssignee: (value: boolean) => void,
+    openAssigneeTable: boolean,
+    setOpenAssigneeTable: (value: boolean) => void,
     handleDelete: (selected: string) => void,
 }
 
@@ -46,7 +45,7 @@ export default function AssigneeTable(props: AssigneeTableProps) {
     const handleClick = (name: string, id: string) => {
         dispatch(setAssignee({ name, id }))
         setAssigneeId(id)
-        props.setOpenAddNewAssignee(!props.openAddNewAssignee);
+        props.setOpenAssigneeTable(!props.openAssigneeTable);
     };
 
     const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
@@ -60,8 +59,8 @@ export default function AssigneeTable(props: AssigneeTableProps) {
 
     return (
         <Modal
-            open={props.openAddNewAssignee}
-            onClose={() => props.setOpenAddNewAssignee(!props.openAddNewAssignee)}
+            open={props.openAssigneeTable}
+            onClose={() => props.setOpenAssigneeTable(!props.openAssigneeTable)}
             aria-labelledby="delete-task-modal"
             aria-describedby="deleting-task"
             sx={{ justifyContent: 'center', display: 'flex', alignItems: 'center' }}
@@ -70,7 +69,6 @@ export default function AssigneeTable(props: AssigneeTableProps) {
                 <Paper sx={{ marginTop: '10px', padding: 2, maxWidth: '100%' }}>
                     <TableContainer>
                         <Table
-                            sx={{ minWidth: 750 }}
                             aria-labelledby="tableTitle"
                             size={'small'}
                         >

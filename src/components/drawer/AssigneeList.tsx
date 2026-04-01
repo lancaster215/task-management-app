@@ -2,27 +2,30 @@ import React from 'react';
 import { Avatar, Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 import PersonAdd from '@mui/icons-material/PersonAdd';
 import { useGetAssignees } from '../hooks/api/assignee/useGetAssignees';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store';
 
 
 interface AssigneeListProps {
     openAddNewAccountModal: boolean,
     setOpenAddNewAccountModal: (open: boolean) => void,
-    openAddNewAssignee: boolean,
-    setOpenAddNewAssignee: (open: boolean) => void,
+    openAssigneeTable: boolean,
+    setOpenAssigneeTable: (open: boolean) => void,
 }
 
 function AssigneeList({
     setOpenAddNewAccountModal,
     openAddNewAccountModal,
-    setOpenAddNewAssignee,
-    openAddNewAssignee,
+    setOpenAssigneeTable,
+    openAssigneeTable,
 }: AssigneeListProps) {
     const { data: assignees, isLoading } = useGetAssignees()
+    const { assignee } = useSelector<RootState, RootState['assignee']>((state) => state.assignee);
 
     const sideBarItems = [
         {
-            title: "Select Assigee",
-            link: () => setOpenAddNewAssignee(!openAddNewAssignee),
+            title: assignee.name ? assignee.name : "Select Assigee",
+            link: () => setOpenAssigneeTable(!openAssigneeTable),
             withAvatar: true,
             avatar: <Avatar />,
             disabled: isLoading ? false : assignees.length === 0

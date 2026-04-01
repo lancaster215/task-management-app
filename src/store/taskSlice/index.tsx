@@ -14,7 +14,6 @@ const taskSlice = createSlice({
       tags: '',
       assigneeId: '',
     },
-    tasks: [],
     filter: {
       status: '',
       priority: '',

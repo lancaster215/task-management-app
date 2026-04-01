@@ -1,4 +1,3 @@
-import handleGetTasks from "@/api/task/handleGetTasks";
 import { useAddAssignee } from "@/components/hooks/api/assignee/useAddAssignee";
 import { useAddTask } from "@/components/hooks/api/tasks/useAddTask";
 import { useEditTask } from "@/components/hooks/api/tasks/useEditTask";
@@ -10,15 +9,17 @@ import { formattedDate } from "@/helpers/dateFormatter";
 import { getComparator } from "@/helpers/getComparator";
 import { Task } from "@/pages/dashboard";
 import { RootState } from "@/store";
+import { setAssignee } from "@/store/assigneeSlice";
 import { Data, Order } from "@/types/tableTypes";
 import React, { createContext, useMemo, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 export interface TablePanelContextType {
-    setEditingId: React.Dispatch<React.SetStateAction<number | null>>,
-    editingId: number | null,
+    setTaskToEdit: React.Dispatch<React.SetStateAction<Task | null>>,
+    taskToEdit: Task | null,
     setOpenAddTaskModal: React.Dispatch<React.SetStateAction<boolean>>,
     openAddTaskModal: boolean,
+    addTaskPending: boolean,
     setSelected: React.Dispatch<React.SetStateAction<readonly number[]>>,
     selected: readonly number[],
     handleSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void,
@@ -53,16 +54,17 @@ interface TablePanelProviderProps {
 }
 
 export const TablePanelProvider = ({ children }: TablePanelProviderProps) => {
+    const dispatch = useDispatch()
     const { filter: filterStatus } = useSelector<RootState, RootState['task']>((state) => state.task);
     const { assignee } = useSelector<RootState, RootState['assignee']>((state) => state.assignee);
-    const { data: tasks, isLoading } = useGetTasks(assignee)
+    const { data: tasks, isLoading: isLoadingTasks } = useGetTasks(assignee)
 
     const { mutateAsync: addAssignee, isPending: addAssigeePending } = useAddAssignee();
     const { mutateAsync: addTask, isPending: addTaskPending } = useAddTask();
     const { mutateAsync: editTask, isPending: editTaskPending } = useEditTask();
     const { mutateAsync: removeTask, isPending: removeTaskPending } = useRemoveTask();
 
-    const [editingId, setEditingId] = useState<number | null>(null);
+    const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
     const [openAddTaskModal, setOpenAddTaskModal] = useState<boolean>(false);
     const [selected, setSelected] = useState<readonly number[]>([]);
     const [order, setOrder] = useState<Order>('asc');
@@ -77,7 +79,7 @@ export const TablePanelProvider = ({ children }: TablePanelProviderProps) => {
     const handleEdit = (id: number) => {
         const taskToEdit = tasks.find((task: Task) => task.id === id);
         if (taskToEdit) {
-            setEditingId(id);
+            setTaskToEdit(taskToEdit);
         }
     }
 
@@ -117,6 +119,7 @@ export const TablePanelProvider = ({ children }: TablePanelProviderProps) => {
     const handleAddNewAssigne = async (formData: AssigneeFormData) => {
         try {
             await addAssignee(formData);
+            dispatch(setAssignee(formData))
             setOpenAddNewAccountModal(false);
         } catch (error) {
             // Error is already handled in the hook, but you can add UI toasts here
@@ -168,10 +171,11 @@ export const TablePanelProvider = ({ children }: TablePanelProviderProps) => {
     }
 
     const handleSaveEdit = async (formData: TaskFormData) => {
-        if (!editingId) return;
+        console.log('handleSaveEdit', formData)
+        if (!taskToEdit) return;
         try {
             await editTask({ formData, assignee })
-            setEditingId(null);
+            setTaskToEdit(null);
         } catch (error) { }
     }
 
@@ -182,10 +186,11 @@ export const TablePanelProvider = ({ children }: TablePanelProviderProps) => {
     }
 
     const value: TablePanelContextType = {
-        setEditingId,
-        editingId,
+        setTaskToEdit,
+        taskToEdit,
         setOpenAddTaskModal,
         openAddTaskModal,
+        addTaskPending,
         setSelected,
         selected,
         handleSelectAllClick,

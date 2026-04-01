@@ -1,13 +1,17 @@
-import React, { useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import Box from '@mui/material/Box';
 import AddNewAssigneeModal, { AssigneeFormData } from './modal/addNewAssignee';
 import TabPanel from './tab_panel';
 import SideDrawer from './drawer';
 import AssigneeTable from './modal/assigneeTableModal';
-import handleRemoveAssignee from '@/api/assignee/handleRemoveAssignee';
 import handleGetAssignees from '@/api/assignee/handleGetAssignees';
 import { useAddAssignee } from './hooks/api/assignee/useAddAssignee';
 import { useQuery } from '@tanstack/react-query';
+import Loading from './loading';
+import { useRemoveAssignee } from './hooks/api/assignee/useRemoveAssignee';
+import { SIDEBAR_WIDTH } from './constants/sidebarItems';
+import { setAssignee } from '@/store/assigneeSlice';
+import { useDispatch } from 'react-redux';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -37,85 +41,98 @@ export function CustomTabPanel(props: TabPanelProps) {
   );
 }
 
-const SIDEBAR_WIDTH = 280;
-
 
 export default function Dashboard() {
-  const { mutateAsync: addAssignee, isPending } = useAddAssignee();
-  const { data: assignees, isLoading } = useQuery({
+  const dispatch = useDispatch();
+  const { mutateAsync: addAssignee, isPending: isPendingAddingAssignee } = useAddAssignee();
+  const { mutateAsync: removeAssignee, isPending: isPendingDeletingAssigne } = useRemoveAssignee();
+  const { data: assignees, isLoading, isError } = useQuery({
     queryKey: ['assignees'],
     queryFn: handleGetAssignees
   });
 
   const [openAddNewAccountModal, setOpenAddNewAccountModal] = useState<boolean>(false);
   const [openSidebar, setOpenSideBar] = useState(false);
-  const [openAddNewAssignee, setOpenAddNewAssignee] = useState<boolean>(false);
+  const [openAssigneeTable, setOpenAssigneeTable] = useState<boolean>(false);
 
   const handleAddNewAssigne = async (formData: AssigneeFormData) => {
     try {
       await addAssignee(formData);
       setOpenAddNewAccountModal(false);
+      dispatch(setAssignee(formData));
     } catch (error) {
-      // Error is already handled in the hook, but you can add UI toasts here
+      console.log('handleAddNewAssigne', error)
     }
   }
 
   const handleDelete = async (selected: string) => {
-    await handleRemoveAssignee(selected)
+    try {
+      await removeAssignee(selected);
+      dispatch(setAssignee({ name: '', id: '' }))
+    } catch (error) {
+    }
+  }
+
+  if (isPendingAddingAssignee || isPendingDeletingAssigne) {
+    return (
+      <Loading />
+    )
   }
 
   return (
-    <Box
-      sx={{
-        width: '100%',
-        padding: '20px',
-        justifyContent: 'center',
-        display: 'flex',
-        bgcolor: 'background.default',
-      }}
-    >
-      <AddNewAssigneeModal
-        openAddNewAccountModal={openAddNewAccountModal}
-        setOpenAddNewAccountModal={setOpenAddNewAccountModal}
-        handleAddNewAssigne={handleAddNewAssigne}
-        onNoButton={() => setOpenAddNewAccountModal(!openAddNewAccountModal)}
-      />
-
-      {assignees && assignees.length > 0 &&
-        <AssigneeTable
-          openAddNewAssignee={openAddNewAssignee}
-          setOpenAddNewAssignee={setOpenAddNewAssignee}
-          handleDelete={handleDelete}
-        />
-      }
-
+    <Suspense fallback={<Loading />}>
       <Box
         sx={{
           width: '100%',
-          backgroundColor: 'palette.background.default',
-          position: 'relative',
-          overflow: 'hidden',
-          borderRadius: '8px',
-          minHeight: '80vh'
+          padding: '20px',
+          justifyContent: 'center',
+          display: 'flex',
+          bgcolor: 'background.default',
         }}
       >
-        {/* SIDE DRAWER */}
-        <SideDrawer
-          setOpenAddNewAccountModal={setOpenAddNewAccountModal}
+        <AddNewAssigneeModal
           openAddNewAccountModal={openAddNewAccountModal}
-          sidebarWidth={SIDEBAR_WIDTH}
-          openSidebar={openSidebar}
-          setOpenSideBar={setOpenSideBar}
-          openAddNewAssignee={openAddNewAssignee}
-          setOpenAddNewAssignee={setOpenAddNewAssignee}
+          setOpenAddNewAccountModal={setOpenAddNewAccountModal}
+          handleAddNewAssigne={handleAddNewAssigne}
+          onNoButton={() => setOpenAddNewAccountModal(!openAddNewAccountModal)}
         />
 
-        {/* TABS */}
-        <TabPanel
-          sidebarWidth={SIDEBAR_WIDTH}
-          openSidebar={openSidebar}
-        />
+        {assignees && assignees.length > 0 &&
+          <AssigneeTable
+            openAssigneeTable={openAssigneeTable}
+            setOpenAssigneeTable={setOpenAssigneeTable}
+            handleDelete={handleDelete}
+          />
+        }
+
+        <Box
+          sx={{
+            width: '100%',
+            backgroundColor: 'palette.background.default',
+            position: 'relative',
+            overflow: 'hidden',
+            borderRadius: '8px',
+            minHeight: '80vh'
+          }}
+        >
+          {/* SIDE DRAWER */}
+          <SideDrawer
+            setOpenAddNewAccountModal={setOpenAddNewAccountModal}
+            openAddNewAccountModal={openAddNewAccountModal}
+            sidebarWidth={SIDEBAR_WIDTH}
+            openSidebar={openSidebar}
+            setOpenSideBar={setOpenSideBar}
+            openAssigneeTable={openAssigneeTable}
+            setOpenAssigneeTable={setOpenAssigneeTable}
+          />
+
+          {/* TABS */}
+          <TabPanel
+            sidebarWidth={SIDEBAR_WIDTH}
+            openSidebar={openSidebar}
+          />
+        </Box>
       </Box>
-    </Box>
+    </Suspense>
   )
 }

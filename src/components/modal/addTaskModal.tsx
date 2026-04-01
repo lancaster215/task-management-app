@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -8,8 +8,10 @@ import {
 } from "@mui/material";
 import { useTablePanelContext } from '../hooks/useTableContext';
 import styles from "../styles";
+import Loading from '../loading';
 
-const taskSchema = z.object({
+export const taskSchema = z.object({
+    id: z.number().nullable().optional(),
     title: z.string().min(1, "Title is required"),
     description: z.string().min(1, "Description is required"),
     dueDate: z.string().min(1, "Date is required"),
@@ -23,9 +25,10 @@ export type TaskFormData = z.infer<typeof taskSchema>;
 export default function AddTaskModal() {
     const { openAddTaskModal, setOpenAddTaskModal, handleSubmitToAPI } = useTablePanelContext();
 
-    const { control, handleSubmit, formState: { errors } } = useForm<TaskFormData>({
+    const { control, handleSubmit, reset, formState: { errors } } = useForm<TaskFormData>({
         resolver: zodResolver(taskSchema),
         defaultValues: {
+            id: null,
             title: '',
             description: '',
             dueDate: '',
@@ -35,8 +38,15 @@ export default function AddTaskModal() {
         }
     });
 
+    useEffect(() => {
+        if (openAddTaskModal) {
+            reset();
+        }
+    }, [openAddTaskModal, reset]);
+
     const onSubmit = (data: TaskFormData) => {
         handleSubmitToAPI(data)
+        reset();
         setOpenAddTaskModal(false);
     };
 
@@ -48,7 +58,16 @@ export default function AddTaskModal() {
             aria-describedby="adding-task"
             sx={{ justifyContent: 'center', display: 'flex', alignItems: 'center' }}
         >
-            <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={styles.formBox}>
+            <Box
+                component="form"
+                onSubmit={
+                    handleSubmit(
+                        onSubmit,
+                        (err) => console.log('FORM ERRORS', err)
+                    )
+                }
+                sx={styles.formBox}
+            >
                 <Controller
                     name="title"
                     control={control}
