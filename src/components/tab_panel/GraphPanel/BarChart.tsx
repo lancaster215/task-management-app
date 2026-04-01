@@ -4,33 +4,21 @@ import { RootState } from "@/store";
 import { BarChart } from "@mui/x-charts/BarChart";
 import { useSelector } from "react-redux";
 import { theme } from '@/styles/theme';
+import { useGetTasks } from '@/components/hooks/api/tasks/useGetTasks';
 
 type Props = {
-    task: {
-        id: number,
-        name: string,
-        time: string,
-        title: string,
-        description: string,
-        status: string,
-        priority: string,
-        dueDate: string,
-        tags: string,
-        createdAt: string,
-        action: (string | number),
-        assigneeId: string,
-    }[],
     windowWidth: number,
 }
 
-export default function BarChartPanel({ task: dataTask, windowWidth }: Props) {
-    const { assignee } = useSelector((state: RootState) => state.task)
-    const data = dataTask.filter((task: Task) => task.assigneeId === assignee.id)
+export default function BarChartPanel({ windowWidth }: Props) {
+    const { assignee } = useSelector<RootState, RootState['assignee']>((state) => state.assignee)
+    const { data: task } = useGetTasks(assignee)
+    const data = task.filter((task: Task) => task.assigneeId === assignee.id)
     if (data.length <= 0) {
         return
     }
     // Count priorities
-    const priorityCounts: Record<string, number> = data.reduce((acc, task) => {
+    const priorityCounts: Record<string, number> = data.reduce((acc: any, task: Task) => {
         const key = task.priority.toUpperCase();
         acc[key] = (acc[key] || 0) + 1;
         return acc;
