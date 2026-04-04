@@ -1,15 +1,12 @@
-import { DashboardProps, Task } from "@/pages/dashboard";
+import { Task } from "@/pages/dashboard";
 import { Autocomplete, Box, Button, Checkbox, Paper, Stack, Table, TableBody, TableCell, TableContainer, TablePagination, TableRow, TextField } from "@mui/material";
-import React, { useEffect } from "react";
-import AddTaskModal from "../../modal/addTaskModal";
+import React, { useEffect, useMemo } from "react";
+import AddTaskModal from "../../modal/AddTaskModal";
 import EnhancedTableHead from "../../custom_components/EnhancedTableHead";
-import EditTaskModal from "../../modal/editTaskModal";
+import EditTaskModal from "@/components/modal/EditTaskModal";
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useDispatch } from "react-redux";
-import { addTask } from "@/store/taskSlice";
-import DeleteTaskModal from "../../modal/deleteTaskModal";
+import DeleteTaskModal from "@/components/modal/DeleteTaskModal";
 import { formattedDate } from "@/helpers/dateFormatter";
-import { BASE_URL } from "../../constants/baseURL";
 import normalizeText from "@/helpers/noramlizeText";
 import { useStatusColor } from "../../hooks/useStatusColor";
 import { usePriorityColor } from "../../hooks/usePriorityColor";
@@ -17,17 +14,14 @@ import { useTagsColor } from "../../hooks/useTagsColor";
 import { useTablePanelContext } from "@/components/hooks/useTableContext";
 import NoAssigneeDisplay from "./NoAssigneeDisplay";
 import NoTaskDisplay from "./NoTaskDisplay";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
+import Loading from "@/components/loading";
+import { useGetTasks } from "@/components/hooks/api/tasks/useGetTasks";
+import EditIcon from '@mui/icons-material/Edit';
 
-interface TablePanelProps extends DashboardProps {
-    openSidebar: boolean
-}
-
-export default function TablePanel({ task: itasks, assignee, openSidebar }: TablePanelProps) {
-    const dispatch = useDispatch();
+export default function TablePanel() {
     const {
-        setTasks,
-        tasks,
-        assigneeFromRedux,
         setOpenAddTaskModal,
         openAddTaskModal,
         setSelected,
@@ -48,27 +42,10 @@ export default function TablePanel({ task: itasks, assignee, openSidebar }: Tabl
         openDeleteModal,
         handleEdit,
         filteredTasks,
+        addTaskPending
     } = useTablePanelContext();
-
-    useEffect(() => {
-        const fetchTasks = async () => {
-            try {
-                const res = await fetch(`${BASE_URL}/api/task`);
-                const latestTasks = await res.json();
-                if ((assignee || assigneeFromRedux) && latestTasks) {
-                    const finalAssigneeId = assigneeFromRedux ?? assignee
-                    const initialTasks = latestTasks.filter((task: Task) => task.assigneeId === finalAssigneeId.id)
-
-                    setTasks(initialTasks);
-                    dispatch(addTask(latestTasks))
-                }
-            } catch (err) {
-                console.log("Error:", err)
-            }
-        };
-
-        fetchTasks();
-    }, [assignee, assigneeFromRedux]);
+    const { assignee } = useSelector<RootState, RootState['assignee']>((state) => state.assignee);
+    const { data: tasks, isLoading: isLoadingTasks } = useGetTasks(assignee)
 
     useEffect(() => {
         if (!searchText.trim()) return;
@@ -83,7 +60,9 @@ export default function TablePanel({ task: itasks, assignee, openSidebar }: Tabl
         return () => clearTimeout(delayDebounce);
     }, [searchText]);
 
-
+    const filterByAssigneeId = useMemo(() =>
+        filteredTasks.filter((filteredTask: Task) => filteredTask.assigneeId === assignee.id)
+        , [filteredTasks, assignee])
 
     const handleClick = (id: number) => {
         const selectedIndex = selected.indexOf(id);
@@ -108,213 +87,215 @@ export default function TablePanel({ task: itasks, assignee, openSidebar }: Tabl
         setSearchText(value);
     }
 
-    // No assignee
-    if (assigneeFromRedux.name === '') return <NoAssigneeDisplay />
+    if (isLoadingTasks || addTaskPending) {
+        return <Loading />
+    } else {
+        // No assignee
+        if (assignee.name === '') return <NoAssigneeDisplay />
 
-    // No Task for selected assignee
-    if (tasks.length === 0) return <NoTaskDisplay />
+        // No Task for selected assignee
+        if (tasks.length === 0 && assignee.name !== '') return <NoTaskDisplay />
 
-    if (!assignee) return;
+        return (
+            <>
+                <AddTaskModal />
+                <EditTaskModal />
+                <DeleteTaskModal />
 
-    return (
-        <>
-            <AddTaskModal />
-            <EditTaskModal />
-            <DeleteTaskModal />
-
-            <Stack
-                direction="row"
-                spacing={2}
-                alignItems="center"
-                sx={{ width: '100%' }}
-            >
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => setOpenAddTaskModal(!openAddTaskModal)}
-                    sx={{
-                        fontSize: "clamp(8px, 1.5vw, 15px)",
-                        minWidth: 'fit-content'
-                    }}
+                <Stack
+                    direction="row"
+                    spacing={2}
+                    alignItems="center"
+                    sx={{ width: '100%' }}
                 >
-                    +
-                </Button>
-                <Autocomplete
-                    value={searchText}
-                    onInputChange={handleAutocompleteInputChange}
-                    disableClearable
-                    options={searchTextArr}
-                    sx={{
-                        fontSize: "clamp(8px, 1.5vw, 16px)",
-                        flexGrow: 1,
-                    }}
-                    renderInput={(params) => (
-                        <TextField
-                            {...params}
-                            label="Search by title or description"
-                            slotProps={{
-                                input: {
-                                    ...params.InputProps,
-                                    type: 'search',
-                                },
-                            }}
-                            sx={{
-                                input: {
-                                    color: 'black',
-                                    '&::placeholder': {
-                                        color: 'black',
-                                        opacity: 0.8,
-                                        fontSize: "clamp(8px, 1.5vw, 16px)"
-                                    },
-                                },
-                                label: { color: 'black' },
-                                '& .MuiOutlinedInput-root': {
-                                    '& fieldset': {
-                                        borderColor: 'black',
-                                    },
-                                    '&:hover fieldset': {
-                                        borderColor: '#90caf9',
-                                    },
-                                    '&.Mui-focused fieldset': {
-                                        borderColor: '#42a5f5',
-                                    },
-                                },
-                            }}
-                        />
-                    )}
-                />
-                <Button
-                    variant="outlined"
-                    color="error"
-                    onClick={() => setOpenDeleteModal(!openDeleteModal)}
-                    disabled={selected.length === 0}
-                    sx={{ minWidth: 'fit-content' }}
-                >
-                    <DeleteIcon sx={{ width: 'clamp(15px, 1.5vw, 16px)' }} />
-                </Button>
-            </Stack>
-            <Paper sx={{ marginTop: 2, padding: 2 }}>
-                <TableContainer>
-                    <Table
-                        sx={{ minWidth: 750 }}
-                        aria-labelledby="tableTitle"
-                        size={'small'}
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => setOpenAddTaskModal(!openAddTaskModal)}
+                        sx={{
+                            fontSize: "clamp(8px, 1.5vw, 15px)",
+                            minWidth: 'fit-content'
+                        }}
                     >
-                        <EnhancedTableHead
-                            numSelected={selected.length}
-                            order={order}
-                            orderBy={orderBy}
-                            onSelectAllClick={handleSelectAllClick}
-                            onRequestSort={handleRequestSort}
-                            rowCount={5}
-                            header='task'
-                        />
-                        <TableBody>
-                            {filteredTasks.map((task, id) => {
-                                const isItemSelected = task.id ? selected.includes(task.id) : false
-                                return (
-                                    <TableRow
-                                        hover
-                                        onClick={() => task.id && handleClick(task.id)}
-                                        role="checkbox"
-                                        aria-checked={isItemSelected}
-                                        tabIndex={-1}
-                                        key={id}
-                                        selected={isItemSelected}
-                                        sx={{ cursor: 'pointer' }}
-                                    >
-                                        <TableCell padding="checkbox">
-                                            <Checkbox
-                                                color="primary"
-                                                checked={isItemSelected}
-                                            // inputProps={{
-                                            // 'aria-labelledby': labelId,
-                                            // }}
-                                            />
-                                        </TableCell>
-                                        {[
-                                            {
-                                                text: task.title,
-                                                color: 'black',
-                                            },
-                                            {
-                                                text: task.description,
-                                                color: 'black',
-                                            },
-                                            {
-                                                text: task.status,
-                                                color: useStatusColor(task.status),
-                                                withBg: true,
-                                            },
-                                            {
-                                                text: task.priority,
-                                                color: usePriorityColor(task.priority),
-                                                withBg: true,
-                                            },
-                                            {
-                                                text: task.tags,
-                                                color: useTagsColor(task.tags),
-                                                withBg: true,
-                                            },
-                                            {
-                                                text: formattedDate(task.dueDate),
-                                                color: 'black'
-                                            },
-                                            // {
-                                            //     text: formattedDate(task.createdAt),
-                                            //     color: 'black'
-                                            // }
-                                        ].map((text) =>
-                                            <TableCell align={text.withBg ? "center" : "left"}>
-                                                <Box
-                                                    sx={[
-                                                        {
-                                                            fontSize: "clamp(10px, 1.5vw, 16px)",
-                                                            textOverflow: 'ellipsis',
-                                                            whiteSpace: "nowrap",
-                                                            overflow: "hidden",
-                                                            maxWidth: "150px",
-                                                        },
-                                                        text.withBg ? {
-                                                            backgroundColor: text.color,
-                                                            height: 'auto',
-                                                            width: 'auto',
-                                                            padding: '10px',
-                                                            borderRadius: '5px',
-                                                            color: 'white',
-                                                        } : {}
-                                                    ]}
-                                                >
-                                                    {normalizeText(text.text)}
-                                                </Box>
+                        +
+                    </Button>
+                    <Autocomplete
+                        value={searchText}
+                        onInputChange={handleAutocompleteInputChange}
+                        disableClearable
+                        options={searchTextArr}
+                        sx={{
+                            fontSize: "clamp(8px, 1.5vw, 16px)",
+                            flexGrow: 1,
+                        }}
+                        renderInput={(params) => (
+                            <TextField
+                                {...params}
+                                label="Search by title or description"
+                                slotProps={{
+                                    input: {
+                                        ...params.InputProps,
+                                        type: 'search',
+                                    },
+                                }}
+                                sx={{
+                                    input: {
+                                        color: 'black',
+                                        '&::placeholder': {
+                                            color: 'black',
+                                            opacity: 0.8,
+                                            fontSize: "clamp(8px, 1.5vw, 16px)"
+                                        },
+                                    },
+                                    label: { color: 'black' },
+                                    '& .MuiOutlinedInput-root': {
+                                        '& fieldset': {
+                                            borderColor: 'black',
+                                        },
+                                        '&:hover fieldset': {
+                                            borderColor: '#90caf9',
+                                        },
+                                        '&.Mui-focused fieldset': {
+                                            borderColor: '#42a5f5',
+                                        },
+                                    },
+                                }}
+                            />
+                        )}
+                    />
+                    <Button
+                        variant="outlined"
+                        color="error"
+                        onClick={() => setOpenDeleteModal(!openDeleteModal)}
+                        disabled={selected.length === 0}
+                        sx={{ minWidth: 'fit-content' }}
+                    >
+                        <DeleteIcon sx={{ width: 'clamp(15px, 1.5vw, 16px)' }} />
+                    </Button>
+                </Stack>
+                <Paper sx={{ marginTop: 2, padding: 2 }}>
+                    <TableContainer>
+                        <Table
+                            sx={{ minWidth: 750 }}
+                            aria-labelledby="tableTitle"
+                            size={'small'}
+                        >
+                            <EnhancedTableHead
+                                numSelected={selected.length}
+                                order={order}
+                                orderBy={orderBy}
+                                onSelectAllClick={handleSelectAllClick}
+                                onRequestSort={handleRequestSort}
+                                rowCount={5}
+                                header='task'
+                            />
+                            <TableBody>
+                                {filterByAssigneeId.map((task) => {
+                                    const isItemSelected = task.id ? selected.includes(task.id) : false
+                                    return (
+                                        <TableRow
+                                            hover
+                                            onClick={() => task.id && handleClick(task.id)}
+                                            role="checkbox"
+                                            aria-checked={isItemSelected}
+                                            tabIndex={-1}
+                                            key={task.id}
+                                            selected={isItemSelected}
+                                            sx={{ cursor: 'pointer' }}
+                                        >
+                                            <TableCell padding="checkbox">
+                                                <Checkbox
+                                                    color="primary"
+                                                    checked={isItemSelected}
+                                                // inputProps={{
+                                                // 'aria-labelledby': labelId,
+                                                // }}
+                                                />
                                             </TableCell>
-                                        )}
-                                        <TableCell align="left">
-                                            <Button
-                                                variant="contained"
-                                                color="primary"
-                                                onClick={() => task.id && handleEdit(task.id)}
-                                                sx={{ fontSize: "clamp(10px, 1.5vw, 16px)" }}
-                                            >
-                                                Edit
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                )
-                            })}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-                <TablePagination
-                    rowsPerPageOptions={[5, 10, 25]}
-                    component="div"
-                    count={tasks.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                />
-            </Paper>
-        </>
-    )
+                                            {[
+                                                {
+                                                    text: task.title,
+                                                    color: 'black',
+                                                },
+                                                {
+                                                    text: task.description,
+                                                    color: 'black',
+                                                },
+                                                {
+                                                    text: task.status,
+                                                    color: useStatusColor(task.status),
+                                                    withBg: true,
+                                                },
+                                                {
+                                                    text: task.priority,
+                                                    color: usePriorityColor(task.priority),
+                                                    withBg: true,
+                                                },
+                                                {
+                                                    text: task.tags,
+                                                    color: useTagsColor(task.tags),
+                                                    withBg: true,
+                                                },
+                                                {
+                                                    text: formattedDate(task.dueDate),
+                                                    color: 'black'
+                                                },
+                                                // {
+                                                //     text: formattedDate(task.createdAt),
+                                                //     color: 'black'
+                                                // }
+                                            ].map((text, id) =>
+                                                <TableCell key={id} align={text.withBg ? "center" : "left"}>
+                                                    <Box
+                                                        sx={[
+                                                            {
+                                                                fontSize: "clamp(10px, 1.5vw, 16px)",
+                                                                textOverflow: 'ellipsis',
+                                                                whiteSpace: "nowrap",
+                                                                overflow: "hidden",
+                                                                maxWidth: "150px",
+                                                            },
+                                                            text.withBg ? {
+                                                                backgroundColor: text.color,
+                                                                height: 'auto',
+                                                                width: 'auto',
+                                                                padding: '10px',
+                                                                borderRadius: '5px',
+                                                                color: 'white',
+                                                            } : {}
+                                                        ]}
+                                                    >
+                                                        {normalizeText(text.text)}
+                                                    </Box>
+                                                </TableCell>
+                                            )}
+                                            <TableCell align="left">
+                                                <Button
+                                                    variant="contained"
+                                                    color="primary"
+                                                    onClick={() => task.id && handleEdit(task.id)}
+                                                    sx={{ fontSize: "clamp(10px, 1.5vw, 16px)" }}
+                                                >
+                                                    <EditIcon />
+                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    )
+                                })}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                    <TablePagination
+                        rowsPerPageOptions={[5, 10, 25]}
+                        component="div"
+                        count={filteredTasks.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                    />
+                </Paper>
+            </>
+        )
+    }
 }

@@ -9,11 +9,13 @@ import { RootState } from "@/store";
 import TaskCalendar from "./Calendar";
 import { Task } from "@/pages/dashboard";
 import { a11yProps } from '..';
+import { useGetTasks } from '@/components/hooks/api/tasks/useGetTasks';
 
 export default function GraphPanel() {
-    const { task: taskFromStore, assignee } = useSelector((state: RootState) => state.task)
+    const { assignee } = useSelector<RootState, RootState['assignee']>((state) => state.assignee)
+    const { data: tasks } = useGetTasks(assignee)
 
-    const finalTask = taskFromStore.filter((task: Task) => task.assigneeId === assignee.id)
+    const finalTask = tasks.filter((task: Task) => task.assigneeId === assignee.id)
     const [value, setValue] = useState(0);
     const [windowWidth, setWindowWidth] = useState<number>(0);
 
@@ -32,7 +34,7 @@ export default function GraphPanel() {
         return (<Typography>There is no chart to render.</Typography>)
     }
 
-    if (!taskFromStore) return;
+    if (!tasks) return;
 
     return (
         <Box sx={{ justifyContent: 'center', display: 'flex' }}>
@@ -45,13 +47,13 @@ export default function GraphPanel() {
                     </Tabs>
                 </Box>
                 <CustomTabPanel value={value} index={0}>
-                    <PieChartPanel task={taskFromStore} />
+                    <PieChartPanel />
                 </CustomTabPanel>
                 <CustomTabPanel value={value} index={1}>
-                    <BarChartPanel task={taskFromStore} windowWidth={windowWidth} />
+                    <BarChartPanel windowWidth={windowWidth} />
                 </CustomTabPanel>
                 <CustomTabPanel value={value} index={2}>
-                    <TaskCalendar task={taskFromStore} windowWidth={windowWidth} />
+                    <TaskCalendar windowWidth={windowWidth} />
                 </CustomTabPanel>
             </Box>
         </Box>

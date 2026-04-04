@@ -1,20 +1,18 @@
 import React from 'react';
-import AddNewAccountModal from "@/components/modal/addNewAccount";
 import { useTablePanelContext } from "@/components/hooks/useTableContext";
 import { Box, Button } from "@mui/material";
+import AddNewAssigneeModal from '@/components/modal/AddNewAssigneeModal';
 
 export default function NoAssigneeDisplay() {
-    const { openAddNewAccountModal, setOpenAddNewAccountModal, handleOnSubmit, newUser, setNewUser } = useTablePanelContext();
+    const { openAddNewAccountModal, setOpenAddNewAccountModal, handleAddNewAssigne } = useTablePanelContext();
     return (
         <Box sx={{ alignItems: 'center', justifyContent: 'center', display: 'flex', height: '100vh' }}>
             <Box sx={{ textAlign: 'center' }}>
-                <AddNewAccountModal
+                <AddNewAssigneeModal
                     openAddNewAccountModal={openAddNewAccountModal}
                     setOpenAddNewAccountModal={setOpenAddNewAccountModal}
-                    handleOnSubmit={handleOnSubmit}
                     onNoButton={() => setOpenAddNewAccountModal(!openAddNewAccountModal)}
-                    newUser={newUser}
-                    setNewUser={setNewUser}
+                    handleAddNewAssigne={handleAddNewAssigne}
                 />
                 <Button
                     variant="contained"
