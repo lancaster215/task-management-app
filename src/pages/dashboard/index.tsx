@@ -1,6 +1,6 @@
 import React from 'react';
 import Dashboard from "@/components";
-import { BASE_URL } from '@/components/constants/baseURL';
+// import { BASE_URL } from '@/components/constants/baseURL';
 
 export type Task = {
   id?: number,
@@ -8,10 +8,10 @@ export type Task = {
   time?: string,
   title: string,
   description: string,
-  status: string,
-  priority: string,
+  status: "TODO" | "IN_PROGRESS" | "DONE";
+  priority: "LOW" | "MEDIUM" | "HIGH";
   dueDate: string,
-  tags: string,
+  tags: "FEATURE" | "BUG" | "ENHANCEMENT";
   createdAt?: string,
   action?: (string | number),
   assigneeId?: string,
@@ -28,45 +28,44 @@ export type DashboardProps = {
   assignee?: Assignee[]
 }
 
-const Home: React.FC<DashboardProps> = ({ task, assignee }) => {
-  console.log(task, assignee, 'dashboard')
+const Home: React.FC<DashboardProps> = () => {
   return (
-    <Dashboard task={task} assignee={assignee} />
+    <Dashboard />
   )
 }
 
-export const getServerSideProps = async () => {
-  try {
-    const [assigneeRes, taskRes] = await Promise.all([
-      fetch(`${BASE_URL}/api/users`),
-      fetch(`${BASE_URL}/api/task`)
-    ]);
+// export const getServerSideProps = async () => {
+//   try {
+//     const [assigneeRes, taskRes] = await Promise.all([
+//       fetch(`${BASE_URL}/api/users`),
+//       fetch(`${BASE_URL}/api/task`)
+//     ]);
 
-    if (!assigneeRes.ok || !taskRes.ok) {
-      throw new Error('Failed to fetch API data');
-    }
+//     if (!assigneeRes.ok || !taskRes.ok) {
+//       throw new Error('Failed to fetch API data');
+//     }
 
-    const [assignee, task] = await Promise.all([
-      assigneeRes.json(),
-      taskRes.json()
-    ]);
+//     const [assignee, task] = await Promise.all([
+//       assigneeRes.json(),
+//       taskRes.json()
+//     ]);
 
-    return {
-      props: {
-        assignee,
-        task
-      },
-    };
-  } catch (error) {
-    console.error("getServerSideProps error:", error);
+//     return {
+//       props: {
+//         assignee,
+//         task
+//       },
+//     };
+//   } catch (error) {
+//     console.error("getServerSideProps error:", error);
 
-    return {
-      props: {
-        assignee: [],
-        task: [],
-      },
-    };
-  }
-};
+//     return {
+//       props: {
+//         assignee: [],
+//         task: [],
+//       },
+//     };
+//   }
+// };
 
 export default Home

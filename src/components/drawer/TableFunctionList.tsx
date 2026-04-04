@@ -4,6 +4,7 @@ import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import { useDispatch } from 'react-redux';
 import { clearFilter, setFilter } from '@/store/taskSlice';
 import { sideBarItems } from '../constants/sidebarItems';
+import { theme } from '@/styles/theme';
 
 function TableFunctionList() {
     const dispatch = useDispatch();
@@ -12,13 +13,13 @@ function TableFunctionList() {
         startDate: '',
         endDate: '',
     })
+    const [filterValue, setFilterValue] = useState<string | null>(null);
 
     const handleToggle = (title: string) => {
         setOpenFilter(openFilter === title ? null : title);
     };
 
     const handleDateFilter = (value: string, type: string) => {
-        console.log(value, type, dateFilter)
         setDateFilter({
             ...dateFilter,
             [type]: value
@@ -26,9 +27,14 @@ function TableFunctionList() {
         dispatch(setFilter({ value, type }))
     }
 
-
     const handleFilter = (value: string, type: string) => {
         dispatch(setFilter({ value, type }))
+        setFilterValue(value)
+    }
+
+    const handleClearFilter = () => {
+        dispatch(clearFilter())
+        setFilterValue(null)
     }
 
     return (
@@ -68,12 +74,18 @@ function TableFunctionList() {
                                         : item?.filterOptions?.map((option) => (
                                             <ListItemButton
                                                 key={option.value}
-                                                sx={{ pl: 4 }}
+                                                sx={{
+                                                    pl: 4,
+                                                    backgroundColor: filterValue === option.value ? theme.palette.primary.main : 'none',
+                                                    '&:hover': {
+                                                        backgroundColor: filterValue === option.value ? theme.palette.primary.main : 'none',
+                                                    },
+                                                }}
                                                 onClick={() => handleFilter(option.value, item.type)}
                                             >
                                                 <ListItemText
                                                     primary={option.label}
-                                                    sx={{ '& .MuiListItemText-primary': { fontSize: '0.9rem', color: '#666' } }}
+                                                    sx={{ '& .MuiListItemText-primary': { fontSize: '0.9rem', color: '#666666' } }}
                                                 />
                                             </ListItemButton>
                                         ))}
@@ -86,7 +98,7 @@ function TableFunctionList() {
                     <Button
                         variant="contained"
                         color="primary"
-                        onClick={() => dispatch(clearFilter())}
+                        onClick={handleClearFilter}
                         sx={{
                             fontSize: "clamp(8px, 1.5vw, 15px)",
                         }}
