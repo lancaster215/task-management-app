@@ -1,3 +1,6 @@
+/* 
+DEPRICATED
+*/
 import { PrismaClient } from "@/generated/prisma";
 import type { NextApiRequest, NextApiResponse } from "next";
 

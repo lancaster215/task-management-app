@@ -1,17 +1,17 @@
 import React, { Suspense, useState } from 'react';
 import Box from '@mui/material/Box';
-import TabPanel from './tab_panel';
-import SideDrawer from './drawer';
+import TabPanel from '../tab_panel';
+import SideDrawer from '../drawer';
 import handleGetAssignees from '@/api/assignee/handleGetAssignees';
-import { useAddAssignee } from './hooks/api/assignee/useAddAssignee';
+import { useAddAssignee } from '../hooks/api/assignee/useAddAssignee';
 import { useQuery } from '@tanstack/react-query';
-import Loading from './loading';
-import { useRemoveAssignee } from './hooks/api/assignee/useRemoveAssignee';
-import { SIDEBAR_WIDTH } from './constants/sidebarItems';
+import Loading from '../loading';
+import { useRemoveAssignee } from '../hooks/api/assignee/useRemoveAssignee';
+import { SIDEBAR_WIDTH } from '../constants/sidebarItems';
 import { setAssignee } from '@/store/assigneeSlice';
 import { useDispatch } from 'react-redux';
-import AddNewAssigneeModal, { AssigneeFormData } from './modal/AddNewAssigneeModal';
-import AssigneeTable from './modal/AssigneeTableModal';
+import AddNewAssigneeModal, { AssigneeFormData } from '../modal/AddNewAssigneeModal';
+import AssigneeTable from '../modal/AssigneeTableModal';
 
 interface TabPanelProps {
   children?: React.ReactNode;

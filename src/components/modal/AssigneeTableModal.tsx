@@ -5,9 +5,10 @@ import EnhancedTableHead from "../custom_components/EnhancedTableHead";
 import { useDispatch } from "react-redux";
 import { setAssignee } from "@/store/assigneeSlice";
 import DeleteIcon from '@mui/icons-material/Delete';
-import { User } from "..";
+import { User } from "../dashboard";
 import handleGetAssignees from "@/api/assignee/handleGetAssignees";
 import { useQuery } from "@tanstack/react-query";
+import { useGetAssignees } from "../hooks/api/assignee/useGetAssignees";
 
 interface AssigneeTableProps {
     openAssigneeTable: boolean,
@@ -18,10 +19,7 @@ interface AssigneeTableProps {
 export default function AssigneeTable(props: AssigneeTableProps) {
     const dispatch = useDispatch();
 
-    const { data: assignees, isLoading } = useQuery({
-        queryKey: ['assignees'],
-        queryFn: handleGetAssignees
-    });
+    const { data: assignees, isLoading } = useGetAssignees()
 
     const [order, setOrder] = useState<Order>('asc');
     const [orderBy, setOrderBy] = useState<keyof Data | 'action'>('status');

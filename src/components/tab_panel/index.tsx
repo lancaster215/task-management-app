@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { Box, Tab, Tabs } from "@mui/material";
-import { CustomTabPanel } from "..";
+import { CustomTabPanel } from "../dashboard";
 import TablePanel from "./TablePanel";
 import GraphPanel from "./GraphPanel";
 import { DashboardProps } from "@/pages/dashboard";

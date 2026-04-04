@@ -1,5 +1,5 @@
 import React from 'react';
-import { CustomTabPanel } from "@/components";
+import { CustomTabPanel } from "@/components/dashboard";
 import { Box, Tab, Tabs, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import PieChartPanel from "./PieChart";

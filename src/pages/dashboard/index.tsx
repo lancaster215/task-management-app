@@ -1,5 +1,5 @@
 import React from 'react';
-import Dashboard from "@/components";
+import Dashboard from "@/components/dashboard";
 // import { BASE_URL } from '@/components/constants/baseURL';
 
 export type Task = {
@@ -28,7 +28,7 @@ export type DashboardProps = {
   assignee?: Assignee[]
 }
 
-const Home: React.FC<DashboardProps> = () => {
+const DashboardPage: React.FC<DashboardProps> = () => {
   return (
     <Dashboard />
   )
@@ -68,4 +68,4 @@ const Home: React.FC<DashboardProps> = () => {
 //   }
 // };
 
-export default Home
+export default DashboardPage

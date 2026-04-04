@@ -31,8 +31,18 @@ export const theme = createTheme({
             fontWeight: 400,
             color: '#161b22'
         },
+        h3: {
+            fontSize: '15px',
+            fontWeight: 400,
+            color: '#161b22'
+        },
         h4: {
             fontSize: '10px',
+            fontWeight: 400,
+            color: '#161b22'
+        },
+        h5: {
+            fontSize: '8px',
             fontWeight: 400,
             color: '#161b22'
         },
