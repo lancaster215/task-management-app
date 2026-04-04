@@ -1,8 +1,8 @@
-import { useAddAssignee } from "@/components/hooks/api/assignee/useAddAssignee";
-import { useAddTask } from "@/components/hooks/api/tasks/useAddTask";
-import { useEditTask } from "@/components/hooks/api/tasks/useEditTask";
-import { useGetTasks } from "@/components/hooks/api/tasks/useGetTasks";
-import { useRemoveTask } from "@/components/hooks/api/tasks/useRemoveTask";
+import { useAddAssignee } from "@/hooks/api/assignee/useAddAssignee";
+import { useAddTask } from "@/hooks/api/tasks/useAddTask";
+import { useEditTask } from "@/hooks/api/tasks/useEditTask";
+import { useGetTasks } from "@/hooks/api/tasks/useGetTasks";
+import { useRemoveTask } from "@/hooks/api/tasks/useRemoveTask";
 import { AssigneeFormData } from "@/components/modal/AddNewAssigneeModal";
 import { TaskFormData } from "@/components/modal/AddTaskModal";
 import { formattedDate } from "@/helpers/dateFormatter";

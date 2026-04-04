@@ -4,7 +4,7 @@ import { RootState } from "@/store";
 import { BarChart } from "@mui/x-charts/BarChart";
 import { useSelector } from "react-redux";
 import { theme } from '@/styles/theme';
-import { useGetTasks } from '@/components/hooks/api/tasks/useGetTasks';
+import { useGetTasks } from '@/hooks/api/tasks/useGetTasks';
 
 type Props = {
     windowWidth: number,

@@ -1,4 +1,4 @@
-import { BASE_URL } from "@/components/constants/baseURL"
+import { BASE_URL } from "@/constants/baseURL"
 import { TaskFormData } from "@/components/modal/AddTaskModal"
 import { Assignee } from "@/pages/dashboard"
 

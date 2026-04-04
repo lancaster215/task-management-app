@@ -5,7 +5,7 @@ import { Controller, useForm } from 'react-hook-form';
 import * as z from 'zod';
 import styles from "../styles";
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { useRegister } from '../hooks/api/authorization/useRegister';
+import { useRegister } from '../../hooks/api/authorization/useRegister';
 import { theme } from '@/styles/theme';
 
 export const registerSchema = z.object({

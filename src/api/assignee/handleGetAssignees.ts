@@ -1,4 +1,4 @@
-import { BASE_URL } from "@/components/constants/baseURL";
+import { BASE_URL } from "@/constants/baseURL";
 
 export default async function handleGetAssignees() {
     const response = await fetch(`${BASE_URL}/api/users`, {

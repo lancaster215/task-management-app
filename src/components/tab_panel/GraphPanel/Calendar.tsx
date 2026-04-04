@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import { Task } from '@/pages/dashboard';
 import { theme } from '@/styles/theme';
-import { useGetTasks } from '@/components/hooks/api/tasks/useGetTasks';
+import { useGetTasks } from '@/hooks/api/tasks/useGetTasks';
 
 type Props = {
   windowWidth: number,

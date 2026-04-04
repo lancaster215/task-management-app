@@ -1,3 +1,6 @@
+/**
+ * @description: To check if prisma is working and connected
+ */
 import { NextApiRequest, NextApiResponse } from 'next';
 import { prisma } from '@/lib/prisma';
 

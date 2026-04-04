@@ -1,7 +1,7 @@
 import React from 'react';
 import { Avatar, Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 import PersonAdd from '@mui/icons-material/PersonAdd';
-import { useGetAssignees } from '../hooks/api/assignee/useGetAssignees';
+import { useGetAssignees } from '../../hooks/api/assignee/useGetAssignees';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
 

@@ -8,26 +8,13 @@ import * as z from 'zod';
 import styles from "../styles";
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { theme } from '@/styles/theme';
-import { useLogin } from '../hooks/api/authorization/useLogin';
+import { useLogin } from '../../hooks/api/authorization/useLogin';
 import { useDispatch } from 'react-redux';
 import { setUser } from '@/store/userSlice';
 import { useRouter } from 'next/router';
 export const loginSchema = z.object({
     username: z.string().min(1, "Username is required"),
-    password: z.string().min(8, { message: "Password must be at least 8 characters" })
-    // .max(20, { message: "Password must not exceed 20 characters" })
-    // .refine((val) => /[A-Z]/.test(val), {
-    //     message: "Password must contain at least one uppercase letter",
-    // })
-    // .refine((val) => /[a-z]/.test(val), {
-    //     message: "Password must contain at least one lowercase letter",
-    // })
-    // .refine((val) => /[0-9]/.test(val), {
-    //     message: "Password must contain at least one number",
-    // })
-    // .refine((val) => /[!@#$%^&*]/.test(val), {
-    //     message: "Password must contain at least one special character",
-    // }),
+    password: z.string().min(1, "Password is required")
 });
 
 export type LoginFormData = z.infer<typeof loginSchema>;
@@ -44,17 +31,20 @@ export default function Login() {
     });
     const { mutateAsync: login, isPending: loginPending, isError: loginError } = useLogin();
     const [showPassword, setShowPassword] = useState(false);
+    const [credentialError, setCredentialError] = useState<string | null>(null);
 
     const onSubmit = async (data: LoginFormData) => {
         try {
             const dataLogin = await login(data);
             console.log(dataLogin, 'data login');
             if (dataLogin.success) {
-                dispatch(setUser(dataLogin.user.username))
+                dispatch(setUser(dataLogin.user))
+                localStorage.setItem("userId", dataLogin.user.userId)
+                localStorage.setItem("username", dataLogin.user.username);
                 router.push('/dashboard')
             }
         } catch (error) {
-            console.log("Error logging in", error);
+            setCredentialError('Username or Password is invalid')
         }
     };
 
@@ -69,14 +59,14 @@ export default function Login() {
             }
             sx={styles.formBox}
         >
-            {loginError &&
+            {(loginError || credentialError) &&
                 <Typography
                     variant="h3"
                     sx={{
                         color: theme.palette.background.red
                     }}
                 >
-                    Error Logging in
+                    {credentialError ?? loginError}
                 </Typography>
             }
             <Controller

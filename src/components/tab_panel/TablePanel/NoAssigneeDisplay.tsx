@@ -1,5 +1,9 @@
+/**
+ * @deprecated
+ */
+
 import React from 'react';
-import { useTablePanelContext } from "@/components/hooks/useTableContext";
+import { useTablePanelContext } from "@/hooks/useTableContext";
 import { Box, Button } from "@mui/material";
 import AddNewAssigneeModal from '@/components/modal/AddNewAssigneeModal';
 

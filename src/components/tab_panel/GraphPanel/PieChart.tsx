@@ -5,7 +5,7 @@ import { DefaultizedPieValueType, Direction } from "@mui/x-charts";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { theme } from '@/styles/theme';
-import { useGetTasks } from '@/components/hooks/api/tasks/useGetTasks';
+import { useGetTasks } from '@/hooks/api/tasks/useGetTasks';
 
 
 export default function PieChartPanel() {

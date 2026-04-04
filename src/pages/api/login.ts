@@ -38,7 +38,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             message: 'Logged in successfully',
             accessToken,
             user: {
-                username: user.username
+                username: user.username,
+                userId: user.id
             }
         });
     } catch (err) {

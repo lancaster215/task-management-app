@@ -2,8 +2,9 @@ import React from 'react';
 import { Box, Divider, Drawer, IconButton, styled, Typography } from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import AssigneeList from './AssigneeList';
 import TableFunctionList from './TableFunctionList';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store';
 
 interface SideDrawerProps {
     openAddNewAccountModal: boolean,
@@ -20,11 +21,12 @@ const DrawerHeader = styled('div')(({ theme }) => ({
     alignItems: 'center',
     justifyContent: 'flex-end',
     padding: theme.spacing(0, 1),
-    // necessary for content to be below app bar
+
     ...theme.mixins.toolbar,
 }));
 
 function SideDrawer(props: SideDrawerProps) {
+    const { user } = useSelector<RootState, RootState['user']>((state) => state.user)
     return (
         <Box
             component="nav"
@@ -76,18 +78,15 @@ function SideDrawer(props: SideDrawerProps) {
                         justifyContent: 'space-between'
                     }}
                 >
-                    <Typography variant='h2'>Menu</Typography>
+                    <Typography
+                        variant='h2'
+                    >
+                        {user.username}
+                    </Typography>
                     <IconButton onClick={() => props.setOpenSideBar(false)}>
                         <ChevronLeftIcon />
                     </IconButton>
                 </DrawerHeader>
-                <Divider />
-                <AssigneeList
-                    setOpenAddNewAccountModal={props.setOpenAddNewAccountModal}
-                    openAddNewAccountModal={props.openAddNewAccountModal}
-                    openAssigneeTable={props.openAssigneeTable}
-                    setOpenAssigneeTable={props.setOpenAssigneeTable}
-                />
                 <Divider />
                 <TableFunctionList />
             </Drawer>

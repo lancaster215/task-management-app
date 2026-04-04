@@ -1,4 +1,4 @@
-import { BASE_URL } from "@/components/constants/baseURL";
+import { BASE_URL } from "@/constants/baseURL";
 
 export default async function handleRemoveAssignee(selected: string) {
     const response = await fetch(`${BASE_URL}/api/removeUser`, {

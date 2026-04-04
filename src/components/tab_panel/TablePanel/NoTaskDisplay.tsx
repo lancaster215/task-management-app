@@ -1,6 +1,10 @@
+/**
+ * @deprecated
+ */
+
 import React from 'react';
 import AddTaskModal from "@/components/modal/AddTaskModal";
-import { useTablePanelContext } from "@/components/hooks/useTableContext";
+import { useTablePanelContext } from "@/hooks/useTableContext";
 import { Box, Button, Typography } from "@mui/material";
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';

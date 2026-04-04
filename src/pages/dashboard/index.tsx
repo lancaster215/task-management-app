@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Dashboard from "@/components/dashboard";
 // import { BASE_URL } from '@/components/constants/baseURL';
 
@@ -29,43 +29,25 @@ export type DashboardProps = {
 }
 
 const DashboardPage: React.FC<DashboardProps> = () => {
+
+  useEffect(() => {
+    const restoreSession = async () => {
+      try {
+        const res = await fetch('/api/refresh', { method: 'POST', credentials: 'include' });
+        if (res.ok) {
+          const { accessToken } = await res.json();
+          localStorage.setItem("accessToken", accessToken);
+        }
+      } catch (e) {
+        console.log("No active session");
+      }
+    };
+    restoreSession();
+  }, []);
+
   return (
     <Dashboard />
   )
 }
-
-// export const getServerSideProps = async () => {
-//   try {
-//     const [assigneeRes, taskRes] = await Promise.all([
-//       fetch(`${BASE_URL}/api/users`),
-//       fetch(`${BASE_URL}/api/task`)
-//     ]);
-
-//     if (!assigneeRes.ok || !taskRes.ok) {
-//       throw new Error('Failed to fetch API data');
-//     }
-
-//     const [assignee, task] = await Promise.all([
-//       assigneeRes.json(),
-//       taskRes.json()
-//     ]);
-
-//     return {
-//       props: {
-//         assignee,
-//         task
-//       },
-//     };
-//   } catch (error) {
-//     console.error("getServerSideProps error:", error);
-
-//     return {
-//       props: {
-//         assignee: [],
-//         task: [],
-//       },
-//     };
-//   }
-// };
 
 export default DashboardPage

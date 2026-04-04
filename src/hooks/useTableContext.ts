@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { TablePanelContext } from "../tab_panel/TablePanel/TablePanelProvider";
+import { TablePanelContext } from "../components/tab_panel/TablePanel/TablePanelProvider";
 
 export const useTablePanelContext = () => {
     const context = useContext(TablePanelContext);

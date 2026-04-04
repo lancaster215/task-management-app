@@ -15,13 +15,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     try {
+        interface TokenPayloadType {
+            userId: number,
+            iat?: number,
+            exp?: number
+        }
         // 2. Verify the refresh token
-        const decoded = jwt.verify(refreshToken, REFRESH_SECRET);
+        const decoded = jwt.verify(refreshToken, REFRESH_SECRET) as TokenPayloadType;
 
         // 3. Issue a NEW short-lived access token
-        const newAccessToken = jwt.sign({ userId: decoded.userId }, ACCESS_SECRET, {
-            expiresIn: '15m'
-        });
+        const newAccessToken = jwt.sign(
+            { userId: decoded.userId },
+            ACCESS_SECRET,
+            { expiresIn: '15m' }
+        );
 
         res.status(200).json({ accessToken: newAccessToken });
     } catch (err) {

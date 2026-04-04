@@ -1,3 +1,7 @@
+/**
+ * @deprecated
+ */
+
 import { Box, Button, Modal, Paper, Table, TableBody, TableCell, TableContainer, TablePagination, TableRow } from "@mui/material"
 import React, { useState } from "react";
 import { Data, Order } from '@/types/tableTypes';
@@ -6,9 +10,7 @@ import { useDispatch } from "react-redux";
 import { setAssignee } from "@/store/assigneeSlice";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { User } from "../dashboard";
-import handleGetAssignees from "@/api/assignee/handleGetAssignees";
-import { useQuery } from "@tanstack/react-query";
-import { useGetAssignees } from "../hooks/api/assignee/useGetAssignees";
+import { useGetAssignees } from "../../hooks/api/assignee/useGetAssignees";
 
 interface AssigneeTableProps {
     openAssigneeTable: boolean,

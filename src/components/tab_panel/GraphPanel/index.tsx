@@ -9,7 +9,7 @@ import { RootState } from "@/store";
 import TaskCalendar from "./Calendar";
 import { Task } from "@/pages/dashboard";
 import { a11yProps } from '..';
-import { useGetTasks } from '@/components/hooks/api/tasks/useGetTasks';
+import { useGetTasks } from '@/hooks/api/tasks/useGetTasks';
 
 export default function GraphPanel() {
     const { assignee } = useSelector<RootState, RootState['assignee']>((state) => state.assignee)

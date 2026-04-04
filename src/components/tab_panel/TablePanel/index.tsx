@@ -8,16 +8,16 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import DeleteTaskModal from "@/components/modal/DeleteTaskModal";
 import { formattedDate } from "@/helpers/dateFormatter";
 import normalizeText from "@/helpers/noramlizeText";
-import { useStatusColor } from "../../hooks/useStatusColor";
-import { usePriorityColor } from "../../hooks/usePriorityColor";
-import { useTagsColor } from "../../hooks/useTagsColor";
-import { useTablePanelContext } from "@/components/hooks/useTableContext";
-import NoAssigneeDisplay from "./NoAssigneeDisplay";
-import NoTaskDisplay from "./NoTaskDisplay";
+import { useStatusColor } from "../../../hooks/useStatusColor";
+import { usePriorityColor } from "../../../hooks/usePriorityColor";
+import { useTagsColor } from "../../../hooks/useTagsColor";
+import { useTablePanelContext } from "@/hooks/useTableContext";
+// import NoAssigneeDisplay from "./NoAssigneeDisplay";
+// import NoTaskDisplay from "./NoTaskDisplay";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import Loading from "@/components/loading";
-import { useGetTasks } from "@/components/hooks/api/tasks/useGetTasks";
+import { useGetTasks } from "@/hooks/api/tasks/useGetTasks";
 import EditIcon from '@mui/icons-material/Edit';
 
 export default function TablePanel() {
@@ -44,8 +44,10 @@ export default function TablePanel() {
         filteredTasks,
         addTaskPending
     } = useTablePanelContext();
-    const { assignee } = useSelector<RootState, RootState['assignee']>((state) => state.assignee);
-    const { data: tasks, isLoading: isLoadingTasks } = useGetTasks(assignee)
+    const isClient = typeof window !== "undefined";
+    const userIdFromLocalStorage = isClient && localStorage.getItem('userId');
+    const { user } = useSelector<RootState, RootState['user']>((state) => state.user)
+    const { data: tasks, isLoading: isLoadingTasks } = useGetTasks(user.userId || String(userIdFromLocalStorage))
 
     useEffect(() => {
         if (!searchText.trim()) return;
@@ -90,11 +92,12 @@ export default function TablePanel() {
     if (isLoadingTasks || addTaskPending) {
         return <Loading />
     } else {
+        // NOTE: DEPRICATED
         // No assignee
-        if (assignee.name === '') return <NoAssigneeDisplay />
+        // if (assignee.name === '') return <NoAssigneeDisplay />
 
         // No Task for selected assignee
-        if (tasks.length === 0 && assignee.name !== '') return <NoTaskDisplay />
+        // if (tasks && tasks?.length === 0) return <NoTaskDisplay />
 
         return (
             <>

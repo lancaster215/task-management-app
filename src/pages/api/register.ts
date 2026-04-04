@@ -1,7 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from '@/lib/prisma';
 import { hashPassword } from "./custom/hashPassword";
-import pool from "@/lib/db";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== "POST") {
@@ -27,7 +26,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (existingUserByName) {
         res.status(400).json({ error: "First name and Last name already exists" })
     }
-    // console.log(userNameExists)
 
 
     const hashedPassword = hashPassword(password);

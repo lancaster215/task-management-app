@@ -1,4 +1,4 @@
-import { BASE_URL } from "@/components/constants/baseURL";
+import { BASE_URL } from "@/constants/baseURL";
 import { AssigneeFormData } from "@/components/modal/AddNewAssigneeModal";
 
 export const handleAddAssignee = async (formData: AssigneeFormData) => {

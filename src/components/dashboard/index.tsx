@@ -2,16 +2,11 @@ import React, { Suspense, useState } from 'react';
 import Box from '@mui/material/Box';
 import TabPanel from '../tab_panel';
 import SideDrawer from '../drawer';
-import handleGetAssignees from '@/api/assignee/handleGetAssignees';
-import { useAddAssignee } from '../hooks/api/assignee/useAddAssignee';
-import { useQuery } from '@tanstack/react-query';
 import Loading from '../loading';
-import { useRemoveAssignee } from '../hooks/api/assignee/useRemoveAssignee';
-import { SIDEBAR_WIDTH } from '../constants/sidebarItems';
-import { setAssignee } from '@/store/assigneeSlice';
-import { useDispatch } from 'react-redux';
-import AddNewAssigneeModal, { AssigneeFormData } from '../modal/AddNewAssigneeModal';
-import AssigneeTable from '../modal/AssigneeTableModal';
+import { SIDEBAR_WIDTH } from '../../constants/sidebarItems';
+import { useGetTasks } from '@/hooks/api/tasks/useGetTasks';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -43,41 +38,13 @@ export function CustomTabPanel(props: TabPanelProps) {
 
 
 export default function Dashboard() {
-  const dispatch = useDispatch();
-  const { mutateAsync: addAssignee, isPending: isPendingAddingAssignee } = useAddAssignee();
-  const { mutateAsync: removeAssignee, isPending: isPendingDeletingAssigne } = useRemoveAssignee();
-  const { data: assignees, isLoading, isError } = useQuery({
-    queryKey: ['assignees'],
-    queryFn: handleGetAssignees
-  });
-
+  const isClient = typeof window !== "undefined";
   const [openAddNewAccountModal, setOpenAddNewAccountModal] = useState<boolean>(false);
   const [openSidebar, setOpenSideBar] = useState(false);
   const [openAssigneeTable, setOpenAssigneeTable] = useState<boolean>(false);
-
-  const handleAddNewAssigne = async (formData: AssigneeFormData) => {
-    try {
-      await addAssignee(formData);
-      setOpenAddNewAccountModal(false);
-      dispatch(setAssignee(formData));
-    } catch (error) {
-      console.log('handleAddNewAssigne', error)
-    }
-  }
-
-  const handleDelete = async (selected: string) => {
-    try {
-      await removeAssignee(selected);
-      dispatch(setAssignee({ name: '', id: '' }))
-    } catch (error) {
-    }
-  }
-
-  if (isPendingAddingAssignee || isPendingDeletingAssigne) {
-    return (
-      <Loading />
-    )
-  }
+  const userIdFromLocalStorage = isClient && localStorage.getItem('userId');
+  const { user } = useSelector<RootState, RootState['user']>((state) => state.user)
+  const { data: tasks, isLoading: isLoadingTasks } = useGetTasks(user.userId || String(userIdFromLocalStorage))
 
   return (
     <Suspense fallback={<Loading />}>
@@ -90,20 +57,6 @@ export default function Dashboard() {
           bgcolor: 'background.default',
         }}
       >
-        <AddNewAssigneeModal
-          openAddNewAccountModal={openAddNewAccountModal}
-          setOpenAddNewAccountModal={setOpenAddNewAccountModal}
-          handleAddNewAssigne={handleAddNewAssigne}
-          onNoButton={() => setOpenAddNewAccountModal(!openAddNewAccountModal)}
-        />
-
-        {assignees && assignees.length > 0 &&
-          <AssigneeTable
-            openAssigneeTable={openAssigneeTable}
-            setOpenAssigneeTable={setOpenAssigneeTable}
-            handleDelete={handleDelete}
-          />
-        }
 
         <Box
           sx={{
@@ -127,10 +80,10 @@ export default function Dashboard() {
           />
 
           {/* TABS */}
-          <TabPanel
+          {/* <TabPanel
             sidebarWidth={SIDEBAR_WIDTH}
             openSidebar={openSidebar}
-          />
+          /> */}
         </Box>
       </Box>
     </Suspense>

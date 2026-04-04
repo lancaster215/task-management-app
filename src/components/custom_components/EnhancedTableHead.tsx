@@ -1,8 +1,8 @@
 import React from 'react';
 import { Checkbox, TableCell, TableHead, TableRow, TableSortLabel } from "@mui/material";
-import { headerTaskCells } from "../constants/headerTaskCells";
+import { headerTaskCells } from "../../constants/headerTaskCells";
 import { Data, Order } from "@/types/tableTypes";
-import { headerUserCells } from '../constants/headerUserCells';
+import { headerUserCells } from '../../constants/headerUserCells';
 
 interface EnhancedTableProps {
     numSelected?: number;

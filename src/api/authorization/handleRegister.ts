@@ -1,4 +1,4 @@
-import { BASE_URL } from "@/components/constants/baseURL";
+import { BASE_URL } from "@/constants/baseURL";
 import { RegisterFormData } from "@/components/register";
 
 export const handleRegister = async (formData: RegisterFormData) => {

@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import { useDispatch } from 'react-redux';
 import { clearFilter, setFilter } from '@/store/taskSlice';
-import { sideBarItems } from '../constants/sidebarItems';
+import { sideBarItems } from '../../constants/sidebarItems';
 import { theme } from '@/styles/theme';
 
 function TableFunctionList() {
