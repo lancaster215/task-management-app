@@ -7,15 +7,16 @@ import BarChartPanel from "./BarChart";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import TaskCalendar from "./Calendar";
-import { Task } from "@/pages/dashboard";
 import { a11yProps } from '..';
 import { useGetTasks } from '@/hooks/api/tasks/useGetTasks';
 
 export default function GraphPanel() {
-    const { assignee } = useSelector<RootState, RootState['assignee']>((state) => state.assignee)
-    const { data: tasks } = useGetTasks(assignee)
+    const isClient = typeof window !== "undefined";
+    const userIdFromLocalStorage = isClient && localStorage.getItem('userId');
+    const { user } = useSelector<RootState, RootState['user']>((state) => state.user)
+    const finalUserId = user.userId || String(userIdFromLocalStorage)
+    const { data: tasks } = useGetTasks(finalUserId)
 
-    const finalTask = tasks.filter((task: Task) => task.assigneeId === assignee.id)
     const [value, setValue] = useState(0);
     const [windowWidth, setWindowWidth] = useState<number>(0);
 
@@ -30,7 +31,7 @@ export default function GraphPanel() {
         setValue(newValue);
     };
 
-    if (finalTask.length === 0) {
+    if (tasks.length === 0) {
         return (<Typography>There is no chart to render.</Typography>)
     }
 

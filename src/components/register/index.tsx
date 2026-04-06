@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Box, Button, IconButton, InputAdornment, OutlinedInput, TextField, Typography } from '@mui/material';
+import { Box, Button, CircularProgress, IconButton, InputAdornment, TextField, Typography } from '@mui/material';
 import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import * as z from 'zod';
@@ -54,10 +54,9 @@ export default function Register({ setIsNewUser }: RegisterProps) {
         confirmPassword: false,
     });
     const [errorMessage, setErrorMessage] = useState<string>('')
-    const { mutateAsync: register, isError, error } = useRegister()
+    const { mutateAsync: register, isPending, isError } = useRegister()
 
     const onSubmit = async (data: RegisterFormData) => {
-        // handleSubmitToAPI(data)
         try {
             const registerResponse = await register(data);
             if (registerResponse.success) {
@@ -81,16 +80,6 @@ export default function Register({ setIsNewUser }: RegisterProps) {
             }
             sx={styles.formBox}
         >
-            {Boolean(errorMessage) &&
-                <Typography
-                    variant="h3"
-                    sx={{
-                        color: theme.palette.background.red
-                    }}
-                >
-                    {errorMessage}
-                </Typography>
-            }
             <Controller
                 name="username"
                 control={control}
@@ -99,7 +88,7 @@ export default function Register({ setIsNewUser }: RegisterProps) {
                         {...field}
                         label="Username"
                         fullWidth
-                        error={!!errors.username}
+                        error={!!errors.username || isError}
                         helperText={errors.username?.message}
                     />
                 )}
@@ -112,7 +101,7 @@ export default function Register({ setIsNewUser }: RegisterProps) {
                         {...field}
                         label="First Name"
                         fullWidth
-                        error={!!errors.firstName}
+                        error={!!errors.firstName || isError}
                         helperText={errors.firstName?.message}
                     />
                 )}
@@ -125,7 +114,7 @@ export default function Register({ setIsNewUser }: RegisterProps) {
                         {...field}
                         label="Last Name"
                         fullWidth
-                        error={!!errors.lastName}
+                        error={!!errors.lastName || isError}
                         helperText={errors.lastName?.message}
                     />
                 )}
@@ -139,7 +128,7 @@ export default function Register({ setIsNewUser }: RegisterProps) {
                         label="Password"
                         type={showPassword.password ? 'text' : 'password'}
                         fullWidth
-                        error={!!errors.password}
+                        error={!!errors.password || isError}
                         helperText={errors.password?.message}
                         slotProps={{
                             input: {
@@ -179,7 +168,7 @@ export default function Register({ setIsNewUser }: RegisterProps) {
                         label="Confirm password"
                         type={showPassword.confirmPassword ? 'text' : 'password'}
                         fullWidth
-                        error={!!errors.confirmPassword}
+                        error={!!errors.confirmPassword || isError}
                         helperText={errors.confirmPassword?.message}
                         slotProps={{
                             input: {
@@ -210,7 +199,22 @@ export default function Register({ setIsNewUser }: RegisterProps) {
                     />
                 )}
             />
-            <Button type="submit" variant="contained">Register</Button>
+            {Boolean(errorMessage) &&
+                <Typography
+                    variant="h3"
+                    sx={{
+                        color: theme.palette.background.red
+                    }}
+                >
+                    {errorMessage}
+                </Typography>
+            }
+            <Button type="submit" variant="contained" sx={{ color: 'white' }} >
+                {isPending ?
+                    <CircularProgress size="20px" sx={{ color: 'white' }} />
+                    : 'Login'
+                }
+            </Button>
         </Box>
     )
 }

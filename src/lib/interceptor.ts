@@ -7,7 +7,7 @@
 import { BASE_URL } from "@/constants/baseURL";
 import { redirect } from "next/navigation";
 
-// Helper to store access token in memory
+// Helper to store access token in memory instead of storing in localStorage
 let memoryToken: string | null = null;
 
 export const setMemoryToken = (token: string | null) => {
@@ -41,7 +41,7 @@ export const api = async (endpoint: string, options: RequestInit = {}): Promise<
     };
 
     try {
-        let response = await fetch(url, config);
+        const response = await fetch(url, config);
 
         // 2. Response "Interceptor" Logic (handling 401)
         if (response.status === 401) {

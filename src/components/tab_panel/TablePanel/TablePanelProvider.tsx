@@ -1,18 +1,15 @@
-import { useAddAssignee } from "@/hooks/api/assignee/useAddAssignee";
 import { useAddTask } from "@/hooks/api/tasks/useAddTask";
 import { useEditTask } from "@/hooks/api/tasks/useEditTask";
 import { useGetTasks } from "@/hooks/api/tasks/useGetTasks";
 import { useRemoveTask } from "@/hooks/api/tasks/useRemoveTask";
-import { AssigneeFormData } from "@/components/modal/AddNewAssigneeModal";
 import { TaskFormData } from "@/components/modal/AddTaskModal";
 import { formattedDate } from "@/helpers/dateFormatter";
 import { getComparator } from "@/helpers/getComparator";
 import { Task } from "@/pages/dashboard";
 import { RootState } from "@/store";
-import { setAssignee } from "@/store/assigneeSlice";
 import { Data, Order } from "@/types/tableTypes";
 import React, { createContext, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 export interface TablePanelContextType {
     setTaskToEdit: React.Dispatch<React.SetStateAction<Task | null>>,
@@ -38,13 +35,13 @@ export interface TablePanelContextType {
     openDeleteModal: boolean,
     setOpenAddNewAccountModal: React.Dispatch<React.SetStateAction<boolean>>,
     openAddNewAccountModal: boolean,
-    handleAddNewAssigne: (data: AssigneeFormData) => Promise<void>,
     handleEdit: (id: number) => void;
     filteredTasks: Task[];
     // Functions
     handleSubmitToAPI: (data: TaskFormData) => Promise<void>;
     handleSaveEdit: (data: TaskFormData) => Promise<void>;
     handleDelete: () => Promise<void>;
+    isLoadingTasks: boolean;
 }
 
 export const TablePanelContext = createContext<TablePanelContextType | undefined>(undefined);
@@ -54,15 +51,17 @@ interface TablePanelProviderProps {
 }
 
 export const TablePanelProvider = ({ children }: TablePanelProviderProps) => {
-    const dispatch = useDispatch()
     const { filter: filterStatus } = useSelector<RootState, RootState['task']>((state) => state.task);
-    const { assignee } = useSelector<RootState, RootState['assignee']>((state) => state.assignee);
-    const { data: tasks, isLoading: isLoadingTasks } = useGetTasks(assignee)
+    const isClient = typeof window !== "undefined";
+    const userIdFromLocalStorage = isClient && localStorage.getItem('userId');
+    const { user } = useSelector<RootState, RootState['user']>((state) => state.user)
+    const finalUserId = user.userId || String(userIdFromLocalStorage)
+    const { data: tasks, isLoading: isLoadingTasks } = useGetTasks(finalUserId)
 
-    const { mutateAsync: addAssignee, isPending: addAssigeePending } = useAddAssignee();
+
     const { mutateAsync: addTask, isPending: addTaskPending } = useAddTask();
-    const { mutateAsync: editTask, isPending: editTaskPending } = useEditTask();
-    const { mutateAsync: removeTask, isPending: removeTaskPending } = useRemoveTask();
+    const { mutateAsync: editTask } = useEditTask();
+    const { mutateAsync: removeTask } = useRemoveTask();
 
     const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
     const [openAddTaskModal, setOpenAddTaskModal] = useState<boolean>(false);
@@ -114,18 +113,6 @@ export const TablePanelProvider = ({ children }: TablePanelProviderProps) => {
         setPage(newPage);
     };
 
-    // This also exist in components/index.tsx which is not scope by the provider
-    // This is being used by NoAssigneeDisplay which is scope by the provider
-    const handleAddNewAssigne = async (formData: AssigneeFormData) => {
-        try {
-            await addAssignee(formData);
-            dispatch(setAssignee(formData))
-            setOpenAddNewAccountModal(false);
-        } catch (error) {
-            // Error is already handled in the hook, but you can add UI toasts here
-        }
-    }
-
     //memoize states that have the potential to create expensive rendering
     const visibleRows = useMemo(
         () => {
@@ -166,22 +153,22 @@ export const TablePanelProvider = ({ children }: TablePanelProviderProps) => {
 
     const handleSubmitToAPI = async (formData: TaskFormData) => {
         try {
-            await addTask({ formData, assignee })
-        } catch (error) { }
+            await addTask({ formData, finalUserId })
+        } catch (error) { console.log(`Error adding task: ${error}`) }
     }
 
     const handleSaveEdit = async (formData: TaskFormData) => {
         if (!taskToEdit) return;
         try {
-            await editTask({ formData, assignee })
+            await editTask({ formData, finalUserId })
             setTaskToEdit(null);
-        } catch (error) { }
+        } catch (error) { console.log(`Error saving task: ${error}`) }
     }
 
     const handleDelete = async () => {
         try {
             await removeTask(selected)
-        } catch (error) { }
+        } catch (error) { console.log(`Error removing task: ${error}`) }
     }
 
     const value: TablePanelContextType = {
@@ -209,9 +196,9 @@ export const TablePanelProvider = ({ children }: TablePanelProviderProps) => {
         setOpenAddNewAccountModal,
         openAddNewAccountModal,
         filteredTasks,
+        isLoadingTasks,
         // Functions
         handleEdit,
-        handleAddNewAssigne,
         handleSubmitToAPI,
         handleSaveEdit,
         handleDelete,

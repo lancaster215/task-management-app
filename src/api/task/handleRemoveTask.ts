@@ -1,12 +1,12 @@
-import { BASE_URL } from "@/constants/baseURL";
+import { api } from "@/lib/interceptor";
 
 export default async function handleRemoveTask(selected: readonly number[]) {
-    const response = await fetch(`${BASE_URL}/api/removeTask`, {
+    const response = await api(`/api/removeTask`, {
         method: 'POST',
         headers: {
             "Content-Type": 'application/json'
         },
-        body: JSON.stringify({ selected }) //array
+        body: JSON.stringify({ selected })
     })
 
     if (!response.ok) {

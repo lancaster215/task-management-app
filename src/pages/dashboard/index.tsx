@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import Dashboard from "@/components/dashboard";
-// import { BASE_URL } from '@/components/constants/baseURL';
+import { Bytes } from '@/generated/prisma/runtime/library';
 
 export type Task = {
   id?: number,
@@ -20,7 +20,7 @@ export type Task = {
 export type Assignee = {
   id: string,
   name: string,
-  avatar?: any
+  avatar?: Bytes
 }
 
 export type DashboardProps = {
@@ -29,22 +29,6 @@ export type DashboardProps = {
 }
 
 const DashboardPage: React.FC<DashboardProps> = () => {
-
-  useEffect(() => {
-    const restoreSession = async () => {
-      try {
-        const res = await fetch('/api/refresh', { method: 'POST', credentials: 'include' });
-        if (res.ok) {
-          const { accessToken } = await res.json();
-          localStorage.setItem("accessToken", accessToken);
-        }
-      } catch (e) {
-        console.log("No active session");
-      }
-    };
-    restoreSession();
-  }, []);
-
   return (
     <Dashboard />
   )

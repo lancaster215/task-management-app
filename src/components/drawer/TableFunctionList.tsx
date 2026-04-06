@@ -38,7 +38,7 @@ function TableFunctionList() {
     }
 
     return (
-        <Box sx={{ width: 250 }} role="presentation">
+        <Box role="presentation">
             <List>
                 {sideBarItems.map((item) => {
                     const openFilterBoolean = openFilter === item.title

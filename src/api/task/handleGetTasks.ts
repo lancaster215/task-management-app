@@ -1,8 +1,6 @@
-import { BASE_URL } from "@/constants/baseURL";
 import { api } from "@/lib/interceptor";
 
 export default async function handleGetTasks({ userId }: { userId: string }) {
-    console.log(userId, 'userId')
     try {
         const tasksResponse = await api(`/api/task`, {
             method: 'POST',

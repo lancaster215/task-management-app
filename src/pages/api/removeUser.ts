@@ -1,5 +1,6 @@
 /**
  * @deprecated
+ * NOTE: can be used in future, if dashboard is created
  */
 
 import type { NextApiRequest, NextApiResponse } from "next";

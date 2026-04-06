@@ -11,9 +11,13 @@ type Props = {
 }
 
 export default function BarChartPanel({ windowWidth }: Props) {
-    const { assignee } = useSelector<RootState, RootState['assignee']>((state) => state.assignee)
-    const { data: task } = useGetTasks(assignee)
-    const data = task.filter((task: Task) => task.assigneeId === assignee.id)
+    const isClient = typeof window !== "undefined";
+    const userIdFromLocalStorage = isClient && localStorage.getItem('userId');
+    const { user } = useSelector<RootState, RootState['user']>((state) => state.user)
+    const finalUserId = user.userId || String(userIdFromLocalStorage)
+    const { data: tasks, isLoading: isLoadingTasks } = useGetTasks(finalUserId)
+
+    const data = tasks.filter((task: Task) => task.assigneeId === finalUserId)
     if (data.length <= 0) {
         return
     }

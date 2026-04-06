@@ -4,9 +4,6 @@ import TabPanel from '../tab_panel';
 import SideDrawer from '../drawer';
 import Loading from '../loading';
 import { SIDEBAR_WIDTH } from '../../constants/sidebarItems';
-import { useGetTasks } from '@/hooks/api/tasks/useGetTasks';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/store';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -38,13 +35,9 @@ export function CustomTabPanel(props: TabPanelProps) {
 
 
 export default function Dashboard() {
-  const isClient = typeof window !== "undefined";
   const [openAddNewAccountModal, setOpenAddNewAccountModal] = useState<boolean>(false);
   const [openSidebar, setOpenSideBar] = useState(false);
   const [openAssigneeTable, setOpenAssigneeTable] = useState<boolean>(false);
-  const userIdFromLocalStorage = isClient && localStorage.getItem('userId');
-  const { user } = useSelector<RootState, RootState['user']>((state) => state.user)
-  const { data: tasks, isLoading: isLoadingTasks } = useGetTasks(user.userId || String(userIdFromLocalStorage))
 
   return (
     <Suspense fallback={<Loading />}>
@@ -80,10 +73,10 @@ export default function Dashboard() {
           />
 
           {/* TABS */}
-          {/* <TabPanel
+          <TabPanel
             sidebarWidth={SIDEBAR_WIDTH}
             openSidebar={openSidebar}
-          /> */}
+          />
         </Box>
       </Box>
     </Suspense>

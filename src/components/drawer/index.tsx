@@ -1,10 +1,11 @@
-import React from 'react';
-import { Box, Divider, Drawer, IconButton, styled, Typography } from "@mui/material";
+import React, { useEffect, useState } from 'react';
+import { Box, Button, CircularProgress, Divider, Drawer, IconButton, styled, Typography } from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import TableFunctionList from './TableFunctionList';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
+import { useLogout } from '@/hooks/api/authorization/useLogout';
 
 interface SideDrawerProps {
     openAddNewAccountModal: boolean,
@@ -27,6 +28,18 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 
 function SideDrawer(props: SideDrawerProps) {
     const { user } = useSelector<RootState, RootState['user']>((state) => state.user)
+    const [username, setUsername] = useState<string>('');
+    const { status, logout } = useLogout();
+
+    useEffect(() => {
+        const usernameFromLocalStorage = window.localStorage.getItem('username');
+        if (usernameFromLocalStorage) setUsername(usernameFromLocalStorage)
+    }, [])
+
+    const handleLogout = () => {
+        logout()
+    }
+
     return (
         <Box
             component="nav"
@@ -81,7 +94,7 @@ function SideDrawer(props: SideDrawerProps) {
                     <Typography
                         variant='h2'
                     >
-                        {user.username}
+                        {user.username || username}
                     </Typography>
                     <IconButton onClick={() => props.setOpenSideBar(false)}>
                         <ChevronLeftIcon />
@@ -89,6 +102,24 @@ function SideDrawer(props: SideDrawerProps) {
                 </DrawerHeader>
                 <Divider />
                 <TableFunctionList />
+                <Divider />
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '1rem' }}>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleLogout}
+                        sx={{
+                            fontSize: "clamp(8px, 1.5vw, 15px)",
+                        }}
+                    >
+                        <Typography sx={{ color: 'black' }}>
+                            {status ?
+                                <CircularProgress size="20px" sx={{ color: 'white' }} />
+                                : 'Logout'
+                            }
+                        </Typography>
+                    </Button>
+                </Box>
             </Drawer>
         </Box>
     )

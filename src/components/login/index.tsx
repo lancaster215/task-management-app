@@ -1,7 +1,7 @@
 'use-client'
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Box, Button, IconButton, InputAdornment, TextField, Typography } from '@mui/material';
+import { Box, Button, CircularProgress, IconButton, InputAdornment, TextField, Typography } from '@mui/material';
 import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import * as z from 'zod';
@@ -18,33 +18,41 @@ export const loginSchema = z.object({
 });
 
 export type LoginFormData = z.infer<typeof loginSchema>;
+export type DataLoginPayload = {
+    user: {
+        username: string,
+        userId: string,
+    }
+}
 
 export default function Login() {
     const router = useRouter()
     const dispatch = useDispatch();
-    const { control, handleSubmit, reset, formState: { errors } } = useForm<LoginFormData>({
+
+    const { control, handleSubmit, formState: { errors } } = useForm<LoginFormData>({
         resolver: zodResolver(loginSchema),
         defaultValues: {
             username: '',
             password: '',
         }
     });
-    const { mutateAsync: login, isPending: loginPending, isError: loginError } = useLogin();
+    const { mutateAsync: login, isPending, isError: loginError, isSuccess } = useLogin();
     const [showPassword, setShowPassword] = useState(false);
     const [credentialError, setCredentialError] = useState<string | null>(null);
 
     const onSubmit = async (data: LoginFormData) => {
         try {
             const dataLogin = await login(data);
-            console.log(dataLogin, 'data login');
+
             if (dataLogin.success) {
                 dispatch(setUser(dataLogin.user))
-                localStorage.setItem("userId", dataLogin.user.userId)
-                localStorage.setItem("username", dataLogin.user.username);
+                window.localStorage.setItem("userId", dataLogin.user.userId)
+                window.localStorage.setItem("username", dataLogin.user.username);
                 router.push('/dashboard')
             }
-        } catch (error) {
+        } catch (err) {
             setCredentialError('Username or Password is invalid')
+            console.log('Error logging in', err)
         }
     };
 
@@ -59,16 +67,6 @@ export default function Login() {
             }
             sx={styles.formBox}
         >
-            {(loginError || credentialError) &&
-                <Typography
-                    variant="h3"
-                    sx={{
-                        color: theme.palette.background.red
-                    }}
-                >
-                    {credentialError ?? loginError}
-                </Typography>
-            }
             <Controller
                 name="username"
                 control={control}
@@ -119,7 +117,24 @@ export default function Login() {
                     />
                 )}
             />
-            <Button type="submit" variant="contained">Login</Button>
+            {(loginError || credentialError) &&
+                <Typography
+                    variant="h3"
+                    sx={{
+                        color: theme.palette.background.red
+                    }}
+                >
+                    {credentialError ?? loginError}
+                </Typography>
+            }
+            <Button type="submit" variant="contained" sx={{ color: 'white' }} >
+                {isPending ?
+                    <CircularProgress size="20px" sx={{ color: 'white' }} />
+                    : isSuccess ?
+                        'Redirecting...'
+                        : 'Login'
+                }
+            </Button>
         </Box>
     )
 }

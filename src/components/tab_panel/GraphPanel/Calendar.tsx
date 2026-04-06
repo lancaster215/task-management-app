@@ -15,11 +15,13 @@ type Props = {
 }
 
 export default function TaskCalendar({ windowWidth }: Props) {
-  const { assignee } = useSelector<RootState, RootState['assignee']>((state) => state.assignee)
-  const { data: dataTasks } = useGetTasks(assignee)
-  const task = dataTasks.filter((task: Task) => task.assigneeId === assignee.id)
+  const isClient = typeof window !== "undefined";
+  const userIdFromLocalStorage = isClient && localStorage.getItem('userId');
+  const { user } = useSelector<RootState, RootState['user']>((state) => state.user)
+  const finalUserId = user.userId || String(userIdFromLocalStorage)
+  const { data: tasks, isLoading: isLoadingTasks } = useGetTasks(finalUserId)
 
-  const dueDates = task.map((t: Task) => dayjs(t.dueDate).format('YYYY-MM-DD'));
+  const dueDates = tasks.map((t: Task) => dayjs(t.dueDate).format('YYYY-MM-DD'));
 
   const Day = (dayProps: PickersDayProps) => {
     const { day, ...pickersDayProps } = dayProps;
@@ -29,7 +31,7 @@ export default function TaskCalendar({ windowWidth }: Props) {
     const dueToday = dueDates.find((date: string) => day.format('YYYY-MM-DD') === date)
 
     const taskTitles = day
-      ? task
+      ? tasks
         .filter((t: Task) => dayjs(t.dueDate).isSame(day, 'day'))
         .map((t: Task) => t.title)
         .join(', ')

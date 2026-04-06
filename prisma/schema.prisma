@@ -30,13 +30,14 @@ model Task {
 }
 
 model User {
-  id     String  @id @default(uuid())
-  username  String  @unique
-  password  String
-  firstName String
-  lastName  String
-  avatar    Bytes?
-  tasks  Task[]  @relation("AssignedTasks")
+  id            String  @id @default(uuid())
+  username      String  @unique
+  password      String
+  firstName     String
+  lastName      String
+  avatar        Bytes?
+  tasks         Task[]  @relation("AssignedTasks")
+  refreshToken  String?
   
   @@unique([firstName, lastName])
 }

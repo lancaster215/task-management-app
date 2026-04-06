@@ -25,6 +25,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             expiresIn: '7d'
         });
 
+        if (refreshToken) {
+            try {
+                // Save the new refresh token to the database
+                await prisma.user.update({
+                    where: { id: user.id },
+                    data: { refreshToken: refreshToken },
+                });
+            } catch (err) {
+                console.log('Error is saving refreshToken', err);
+            }
+        }
+
         res.setHeader('Set-Cookie', serialize('refreshToken', refreshToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
@@ -43,7 +55,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             }
         });
     } catch (err) {
-        res.status(500).json({ error: 'Login failed' });
+        res.status(500).json({ error: `Login failed:${err}` });
     }
 
 }
