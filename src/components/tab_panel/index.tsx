@@ -1,9 +1,8 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { Box, Tab, Tabs } from "@mui/material";
-import { CustomTabPanel } from "..";
+import { CustomTabPanel } from "../dashboard";
 import TablePanel from "./TablePanel";
 import GraphPanel from "./GraphPanel";
-import { DashboardProps } from "@/pages/dashboard";
 import { TablePanelProvider } from './TablePanel/TablePanelProvider';
 
 export function a11yProps(index: number) {

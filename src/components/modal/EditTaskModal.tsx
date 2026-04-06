@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Box, Button, InputLabel, MenuItem, Modal, Select, TextField } from "@mui/material";
 import styles from "../styles";
-import { useTablePanelContext } from '../hooks/useTableContext';
+import { useTablePanelContext } from '../../hooks/useTableContext';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { TaskFormData, taskSchema } from './AddTaskModal';

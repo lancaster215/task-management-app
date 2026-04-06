@@ -5,13 +5,16 @@ import { DefaultizedPieValueType, Direction } from "@mui/x-charts";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { theme } from '@/styles/theme';
-import { useGetTasks } from '@/components/hooks/api/tasks/useGetTasks';
-
+import { useGetTasks } from '@/hooks/api/tasks/useGetTasks';
 
 export default function PieChartPanel() {
-    const { assignee } = useSelector<RootState, RootState['assignee']>((state) => state.assignee)
-    const { data: dataTasks } = useGetTasks(assignee)
-    const data = dataTasks.filter((task: Task) => task.assigneeId === assignee.id)
+    const isClient = typeof window !== "undefined";
+    const userIdFromLocalStorage = isClient && localStorage.getItem('userId');
+    const { user } = useSelector<RootState, RootState['user']>((state) => state.user)
+    const finalUserId = user.userId || String(userIdFromLocalStorage)
+    const { data: tasks, isLoading: isLoadingTasks } = useGetTasks(finalUserId)
+    const data = tasks.filter((task: Task) => task.assigneeId === finalUserId)
+
     if (data.length <= 0) {
         return
     }

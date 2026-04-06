@@ -1,6 +1,5 @@
-// /pages/api/addTask.ts
 import { NextApiRequest, NextApiResponse } from "next";
-import { prisma } from "@/lib/prisma"; // adjust path if needed
+import { prisma } from '@/lib/prisma';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {

@@ -1,8 +1,10 @@
-import pool from "@/lib/db";
-import type { NextApiRequest, NextApiResponse } from "next";
-import { PrismaClient } from "@/generated/prisma";
+/**
+ * @deprecated
+ * NOTE: can be used in future, if dashboard is created
+ */
 
-const prisma = new PrismaClient();
+import type { NextApiRequest, NextApiResponse } from "next";
+import { prisma } from '@/lib/prisma';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     try {

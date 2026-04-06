@@ -1,22 +1,20 @@
-import { BASE_URL } from "@/components/constants/baseURL";
 import { TaskFormData } from "@/components/modal/AddTaskModal";
-
-import { Assignee } from "@/pages/dashboard";
+import { api } from "@/lib/interceptor";
 
 export type AddTaskVariables = {
     formData: TaskFormData;
-    assignee: Assignee;
+    finalUserId: string;
 };
 
-export default async function handleAddTask({ formData, assignee }: AddTaskVariables) {
-    const response = await fetch(`${BASE_URL}/api/addTask`, {
+export default async function handleAddTask({ formData, finalUserId }: AddTaskVariables) {
+    const response = await api(`/api/addTask`, {
         method: 'POST',
         headers: {
             "Content-Type": 'application/json'
         },
         body: JSON.stringify({
             ...formData,
-            assigneeId: assignee.id
+            assigneeId: finalUserId
         })
     })
 

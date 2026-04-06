@@ -1,6 +1,6 @@
 import { Task } from "@/pages/dashboard";
 import { Autocomplete, Box, Button, Checkbox, Paper, Stack, Table, TableBody, TableCell, TableContainer, TablePagination, TableRow, TextField } from "@mui/material";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect } from "react";
 import AddTaskModal from "../../modal/AddTaskModal";
 import EnhancedTableHead from "../../custom_components/EnhancedTableHead";
 import EditTaskModal from "@/components/modal/EditTaskModal";
@@ -8,16 +8,11 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import DeleteTaskModal from "@/components/modal/DeleteTaskModal";
 import { formattedDate } from "@/helpers/dateFormatter";
 import normalizeText from "@/helpers/noramlizeText";
-import { useStatusColor } from "../../hooks/useStatusColor";
-import { usePriorityColor } from "../../hooks/usePriorityColor";
-import { useTagsColor } from "../../hooks/useTagsColor";
-import { useTablePanelContext } from "@/components/hooks/useTableContext";
-import NoAssigneeDisplay from "./NoAssigneeDisplay";
-import NoTaskDisplay from "./NoTaskDisplay";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store";
+import { useStatusColor } from "../../../hooks/useStatusColor";
+import { usePriorityColor } from "../../../hooks/usePriorityColor";
+import { useTagsColor } from "../../../hooks/useTagsColor";
+import { useTablePanelContext } from "@/hooks/useTableContext";
 import Loading from "@/components/loading";
-import { useGetTasks } from "@/components/hooks/api/tasks/useGetTasks";
 import EditIcon from '@mui/icons-material/Edit';
 
 export default function TablePanel() {
@@ -42,10 +37,12 @@ export default function TablePanel() {
         openDeleteModal,
         handleEdit,
         filteredTasks,
-        addTaskPending
+        addTaskPending,
+        isLoadingTasks
     } = useTablePanelContext();
-    const { assignee } = useSelector<RootState, RootState['assignee']>((state) => state.assignee);
-    const { data: tasks, isLoading: isLoadingTasks } = useGetTasks(assignee)
+    const { setColor: setStatusColor } = useStatusColor();
+    const { setColor: setTagsColor } = useTagsColor();
+    const { setColor: setPriorityColor } = usePriorityColor();
 
     useEffect(() => {
         if (!searchText.trim()) return;
@@ -58,11 +55,7 @@ export default function TablePanel() {
         }, 1000); // 1 second after typing stops, trigger function
 
         return () => clearTimeout(delayDebounce);
-    }, [searchText]);
-
-    const filterByAssigneeId = useMemo(() =>
-        filteredTasks.filter((filteredTask: Task) => filteredTask.assigneeId === assignee.id)
-        , [filteredTasks, assignee])
+    }, [searchText, setSearchTextArr]);
 
     const handleClick = (id: number) => {
         const selectedIndex = selected.indexOf(id);
@@ -90,12 +83,6 @@ export default function TablePanel() {
     if (isLoadingTasks || addTaskPending) {
         return <Loading />
     } else {
-        // No assignee
-        if (assignee.name === '') return <NoAssigneeDisplay />
-
-        // No Task for selected assignee
-        if (tasks.length === 0 && assignee.name !== '') return <NoTaskDisplay />
-
         return (
             <>
                 <AddTaskModal />
@@ -190,7 +177,7 @@ export default function TablePanel() {
                                 header='task'
                             />
                             <TableBody>
-                                {filterByAssigneeId.map((task) => {
+                                {filteredTasks.map((task: Task) => {
                                     const isItemSelected = task.id ? selected.includes(task.id) : false
                                     return (
                                         <TableRow
@@ -223,17 +210,17 @@ export default function TablePanel() {
                                                 },
                                                 {
                                                     text: task.status,
-                                                    color: useStatusColor(task.status),
+                                                    color: setStatusColor(task.status),
                                                     withBg: true,
                                                 },
                                                 {
                                                     text: task.priority,
-                                                    color: usePriorityColor(task.priority),
+                                                    color: setPriorityColor(task.priority),
                                                     withBg: true,
                                                 },
                                                 {
                                                     text: task.tags,
-                                                    color: useTagsColor(task.tags),
+                                                    color: setTagsColor(task.tags),
                                                     withBg: true,
                                                 },
                                                 {

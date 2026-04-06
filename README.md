@@ -22,6 +22,10 @@ npm run dev
 npm run test
 npx prisma studio - to see data and relationships
 
+### Hard reset database
+npx prisma migrate reset
+npx prisma db push
+
 ### Available scripts
 
 ### Architecture decisions and trade-offs

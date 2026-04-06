@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Button, Modal, Typography } from "@mui/material";
 import styles from "../styles";
-import { useTablePanelContext } from '../hooks/useTableContext';
+import { useTablePanelContext } from '../../hooks/useTableContext';
 
 export default function DeleteTaskModal() {
     const { openDeleteModal, setOpenDeleteModal, handleDelete } = useTablePanelContext();

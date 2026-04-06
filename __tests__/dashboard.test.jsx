@@ -1,6 +1,6 @@
 // __tests__/dashboard.test.jsx
 import { render, screen } from '@testing-library/react';
-import Dashboard from '../src/components/index.jsx';
+import Dashboard from '../src/components/dashboard/index.jsx';
 
 // Mock Redux + Next Router
 jest.mock('react-redux', () => ({

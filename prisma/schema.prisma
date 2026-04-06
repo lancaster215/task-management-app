@@ -7,7 +7,7 @@
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
-  binaryTargets = ["native", "debian-openssl-1.1.x"]
+  binaryTargets = ["native", "debian-openssl-1.1.x", "debian-openssl-3.0.x", "linux-musl", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
@@ -30,10 +30,16 @@ model Task {
 }
 
 model User {
-  id     String  @id @default(uuid())
-  name   String
-  avatar String?
-  tasks  Task[]  @relation("AssignedTasks")
+  id            String  @id @default(uuid())
+  username      String  @unique
+  password      String
+  firstName     String
+  lastName      String
+  avatar        Bytes?
+  tasks         Task[]  @relation("AssignedTasks")
+  refreshToken  String?
+  
+  @@unique([firstName, lastName])
 }
 
 enum TaskTag {

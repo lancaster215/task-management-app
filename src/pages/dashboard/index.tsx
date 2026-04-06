@@ -1,6 +1,6 @@
 import React from 'react';
-import Dashboard from "@/components";
-// import { BASE_URL } from '@/components/constants/baseURL';
+import Dashboard from "@/components/dashboard";
+import { Bytes } from '@/generated/prisma/runtime/library';
 
 export type Task = {
   id?: number,
@@ -20,7 +20,7 @@ export type Task = {
 export type Assignee = {
   id: string,
   name: string,
-  avatar?: any
+  avatar?: Bytes
 }
 
 export type DashboardProps = {
@@ -28,44 +28,10 @@ export type DashboardProps = {
   assignee?: Assignee[]
 }
 
-const Home: React.FC<DashboardProps> = () => {
+const DashboardPage: React.FC<DashboardProps> = () => {
   return (
     <Dashboard />
   )
 }
 
-// export const getServerSideProps = async () => {
-//   try {
-//     const [assigneeRes, taskRes] = await Promise.all([
-//       fetch(`${BASE_URL}/api/users`),
-//       fetch(`${BASE_URL}/api/task`)
-//     ]);
-
-//     if (!assigneeRes.ok || !taskRes.ok) {
-//       throw new Error('Failed to fetch API data');
-//     }
-
-//     const [assignee, task] = await Promise.all([
-//       assigneeRes.json(),
-//       taskRes.json()
-//     ]);
-
-//     return {
-//       props: {
-//         assignee,
-//         task
-//       },
-//     };
-//   } catch (error) {
-//     console.error("getServerSideProps error:", error);
-
-//     return {
-//       props: {
-//         assignee: [],
-//         task: [],
-//       },
-//     };
-//   }
-// };
-
-export default Home
+export default DashboardPage
