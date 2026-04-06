@@ -4,10 +4,6 @@ export const sideBarItems = [
         type: "status",
         filterOptions: [
             {
-                label: "All Status",
-                value: ""
-            },
-            {
                 label: "Todo",
                 value: "todo"
             },
@@ -26,10 +22,6 @@ export const sideBarItems = [
         type: "priority",
         filterOptions: [
             {
-                label: "All Priority",
-                value: ""
-            },
-            {
                 label: "Low",
                 value: "low"
             },
@@ -47,10 +39,6 @@ export const sideBarItems = [
         title: "Tags",
         type: "tags",
         filterOptions: [
-            {
-                label: "All Tags",
-                value: ""
-            },
             {
                 label: "Feature",
                 value: "feature"
@@ -74,3 +62,5 @@ export const sideBarItems = [
         type: "endDate",
     }
 ]
+
+export const SIDEBAR_WIDTH = 280;

@@ -4,21 +4,21 @@ import { NextApiRequest, NextApiResponse } from "next";
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     const {
-        id,
-        title,
-        description,
-        dueDate,
-        status,
-        priority,
-        tags,
-        assigneeId, // include from frontend payload
+      id,
+      title,
+      description,
+      dueDate,
+      status,
+      priority,
+      tags,
+      assigneeId,
     } = req.body;
 
     // Treat as UTC midnight (remove 8hrs delay)
     const utcDate = new Date(dueDate);
 
     await pool.query(
-        `UPDATE "Task" 
+      `UPDATE "Task" 
             SET 
             title = $2,
             description = $3,
@@ -29,7 +29,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             "assigneeId" = $8,
             "updatedAt" = NOW()
             WHERE id = $1`,
-        [id, title, description, utcDate, status, priority, tags, assigneeId]
+      [id, title, description, utcDate, status, priority, tags, assigneeId]
     );
 
     return res.status(200).json({ message: "Successfully updated task" });

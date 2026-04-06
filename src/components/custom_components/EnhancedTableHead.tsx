@@ -1,7 +1,8 @@
 import React from 'react';
 import { Checkbox, TableCell, TableHead, TableRow, TableSortLabel } from "@mui/material";
-import { headCells } from "../constants/headerCells";
+import { headerTaskCells } from "../constants/headerTaskCells";
 import { Data, Order } from "@/types/tableTypes";
+import { headerUserCells } from '../constants/headerUserCells';
 
 interface EnhancedTableProps {
     numSelected?: number;
@@ -34,26 +35,37 @@ function EnhancedTableHead(props: EnhancedTableProps) {
                     />
                 </TableCell>}
                 {header === 'user' ?
-                    <TableCell>
-                        Assignee Name
-                    </TableCell>
-                    : headCells.map((headCell) => (
+                    headerUserCells.map((headerUserCell) => (
                         <TableCell
-                            key={headCell.id}
-                            align={'left'}
-                            padding={headCell.disablePadding ? 'none' : 'normal'}
-                            sortDirection={orderBy === headCell.id ? order : false}
+                            key={headerUserCell.id}
+                            align={'center'}
+                            padding={headerUserCell.disablePadding ? 'none' : 'normal'}
+                            sortDirection={orderBy === headerUserCell.id ? order : false}
                             style={{
                                 fontSize: "clamp(15px, 1.5vw, 16px)",
-                                minWidth: headCell.minWidth
+                                minWidth: headerUserCell.minWidth
+                            }}
+                        >
+                            {headerUserCell.label}
+                        </TableCell>
+                    ))
+                    : headerTaskCells.map((headerTaskCell) => (
+                        <TableCell
+                            key={headerTaskCell.id}
+                            align={'left'}
+                            padding={headerTaskCell.disablePadding ? 'none' : 'normal'}
+                            sortDirection={orderBy === headerTaskCell.id ? order : false}
+                            style={{
+                                fontSize: "clamp(15px, 1.5vw, 16px)",
+                                minWidth: headerTaskCell.minWidth
                             }}
                         >
                             <TableSortLabel
-                                active={orderBy === headCell.id}
-                                direction={orderBy === headCell.id ? order : 'asc'}
-                                onClick={createSortHandler(headCell.id)}
+                                active={orderBy === headerTaskCell.id}
+                                direction={orderBy === headerTaskCell.id ? order : 'asc'}
+                                onClick={createSortHandler(headerTaskCell.id)}
                             >
-                                {headCell.label}
+                                {headerTaskCell.label}
                             </TableSortLabel>
                         </TableCell>
                     ))}

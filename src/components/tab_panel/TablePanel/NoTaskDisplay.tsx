@@ -1,10 +1,13 @@
 import React from 'react';
-import AddTaskModal from "@/components/modal/addTaskModal";
+import AddTaskModal from "@/components/modal/AddTaskModal";
 import { useTablePanelContext } from "@/components/hooks/useTableContext";
 import { Box, Button, Typography } from "@mui/material";
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store';
 
 export default function NoTaskDisplay() {
-    const { openAddTaskModal, setOpenAddTaskModal, assigneeFromRedux } = useTablePanelContext();
+    const { openAddTaskModal, setOpenAddTaskModal } = useTablePanelContext();
+    const { assignee } = useSelector<RootState, RootState['assignee']>((state) => state.assignee);
     return (
         <Box sx={{ alignItems: 'center', justifyContent: 'center', display: 'flex', height: '100vh' }}>
             <Box sx={{ textAlign: 'center' }}>
@@ -20,7 +23,7 @@ export default function NoTaskDisplay() {
                 >
                     Add Task
                 </Button>
-                <Typography>No Task/s for {assigneeFromRedux.name}</Typography>
+                <Typography>No Task/s for {assignee.name}</Typography>
             </Box>
         </Box>
     )

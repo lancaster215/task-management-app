@@ -1,39 +1,42 @@
 import React from 'react';
-import { Assignee } from "@/pages/dashboard";
 import { Avatar, Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
-import { useRouter } from "next/router";
 import PersonAdd from '@mui/icons-material/PersonAdd';
+import { useGetAssignees } from '../hooks/api/assignee/useGetAssignees';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store';
 
 
 interface AssigneeListProps {
-    fromReduxFromAssignee: Assignee,
     openAddNewAccountModal: boolean,
     setOpenAddNewAccountModal: (open: boolean) => void,
-    openAddNewAssignee: boolean,
-    setOpenAddNewAssignee: (open: boolean) => void,
+    openAssigneeTable: boolean,
+    setOpenAssigneeTable: (open: boolean) => void,
 }
 
 function AssigneeList({
-    fromReduxFromAssignee,
     setOpenAddNewAccountModal,
     openAddNewAccountModal,
-    setOpenAddNewAssignee,
-    openAddNewAssignee
+    setOpenAssigneeTable,
+    openAssigneeTable,
 }: AssigneeListProps) {
-    const router = useRouter();
+    const { data: assignees, isLoading } = useGetAssignees()
+    const { assignee } = useSelector<RootState, RootState['assignee']>((state) => state.assignee);
+
     const sideBarItems = [
         {
-            title: fromReduxFromAssignee.name ? fromReduxFromAssignee.name : "Select Assigee",
-            link: () => setOpenAddNewAssignee(!openAddNewAssignee),
+            title: assignee.name ? assignee.name : "Select Assigee",
+            link: () => setOpenAssigneeTable(!openAssigneeTable),
             withAvatar: true,
             avatar: <Avatar />,
+            disabled: isLoading ? false : assignees.length === 0
         },
 
         {
             title: 'Add assignee',
             link: () => setOpenAddNewAccountModal(!openAddNewAccountModal),
             withAvatar: true,
-            avatar: <PersonAdd fontSize="small" />
+            avatar: <PersonAdd fontSize="small" />,
+            disabled: false
         },
     ]
     return (
@@ -41,7 +44,7 @@ function AssigneeList({
             <List>
                 {sideBarItems.map((text, index) => (
                     <ListItem key={text.title} disablePadding>
-                        <ListItemButton onClick={text.link}>
+                        <ListItemButton onClick={text.link} disabled={text.disabled}>
                             {text.withAvatar &&
                                 <ListItemIcon>
                                     {text.avatar}

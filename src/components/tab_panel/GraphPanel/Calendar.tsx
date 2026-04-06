@@ -8,42 +8,30 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import { Task } from '@/pages/dashboard';
 import { theme } from '@/styles/theme';
+import { useGetTasks } from '@/components/hooks/api/tasks/useGetTasks';
 
 type Props = {
-  task: {
-    id: number,
-    name: string,
-    time: string,
-    title: string,
-    description: string,
-    status: string,
-    priority: string,
-    dueDate: string,
-    tags: string,
-    createdAt: string,
-    action: (string | number),
-    assigneeId: string,
-  }[],
   windowWidth: number,
 }
 
-export default function TaskCalendar({ task: dataTask, windowWidth }: Props) {
-  const { assignee } = useSelector((state: RootState) => state.task)
-  const task = dataTask.filter((task: Task) => task.assigneeId === assignee.id)
+export default function TaskCalendar({ windowWidth }: Props) {
+  const { assignee } = useSelector<RootState, RootState['assignee']>((state) => state.assignee)
+  const { data: dataTasks } = useGetTasks(assignee)
+  const task = dataTasks.filter((task: Task) => task.assigneeId === assignee.id)
 
-  const dueDates = task.map(t => dayjs(t.dueDate).format('YYYY-MM-DD'));
+  const dueDates = task.map((t: Task) => dayjs(t.dueDate).format('YYYY-MM-DD'));
 
   const Day = (dayProps: PickersDayProps) => {
     const { day, ...pickersDayProps } = dayProps;
     const today = dayjs()
     const isDue = day ? dueDates.includes(day.format('YYYY-MM-DD')) : false;
 
-    const dueToday = dueDates.find((date) => day.format('YYYY-MM-DD') === date)
+    const dueToday = dueDates.find((date: string) => day.format('YYYY-MM-DD') === date)
 
     const taskTitles = day
       ? task
-        .filter(t => dayjs(t.dueDate).isSame(day, 'day'))
-        .map(t => t.title)
+        .filter((t: Task) => dayjs(t.dueDate).isSame(day, 'day'))
+        .map((t: Task) => t.title)
         .join(', ')
       : '';
 

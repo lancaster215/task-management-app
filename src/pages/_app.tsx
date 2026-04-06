@@ -6,14 +6,19 @@ import { store } from "../store";
 import { ThemeProvider } from '@emotion/react';
 import { theme } from '@/styles/theme';
 import { CssBaseline } from '@mui/material';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient();
 
 export default function App({ Component, pageProps }: AppProps) {
 	return (
-		<ThemeProvider theme={theme}>
-			<Provider store={store}>
-				<CssBaseline />
-				<Component {...pageProps} />
-			</Provider>
-		</ThemeProvider>
+		<QueryClientProvider client={queryClient}>
+			<ThemeProvider theme={theme}>
+				<Provider store={store}>
+					<CssBaseline />
+					<Component {...pageProps} />
+				</Provider>
+			</ThemeProvider>
+		</QueryClientProvider>
 	)
 }
