@@ -167,7 +167,7 @@ export const TablePanelProvider = ({ children }: TablePanelProviderProps) => {
 
     const handleDelete = async () => {
         try {
-            await removeTask(selected)
+            await removeTask({ selected, finalUserId })
         } catch (error) { console.log(`Error removing task: ${error}`) }
     }
 

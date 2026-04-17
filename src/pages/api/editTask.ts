@@ -1,5 +1,8 @@
 import pool from "@/lib/db";
 import { NextApiRequest, NextApiResponse } from "next";
+import { parse } from "cookie";
+import jwt from 'jsonwebtoken';
+import { REFRESH_SECRET } from "./login";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -16,6 +19,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Treat as UTC midnight (remove 8hrs delay)
     const utcDate = new Date(dueDate);
+
+    const cookies = parse(req.headers.cookie || '');
+    const refreshToken = cookies.refreshToken || 'undefined';
+
+    interface TokenPayloadType {
+      userId?: number,
+      iat?: number,
+      exp?: number
+    }
+
+    const decoded = jwt.verify(refreshToken, REFRESH_SECRET) as TokenPayloadType;
+
+    if (decoded.userId !== assigneeId) {
+      return res.status(403).json({ message: 'Forbidden: You cannot access other users tasks' });
+    }
 
     await pool.query(
       `UPDATE "Task" 

@@ -35,9 +35,7 @@ export function CustomTabPanel(props: TabPanelProps) {
 
 
 export default function Dashboard() {
-  const [openAddNewAccountModal, setOpenAddNewAccountModal] = useState<boolean>(false);
   const [openSidebar, setOpenSideBar] = useState(false);
-  const [openAssigneeTable, setOpenAssigneeTable] = useState<boolean>(false);
 
   return (
     <Suspense fallback={<Loading />}>
@@ -63,13 +61,9 @@ export default function Dashboard() {
         >
           {/* SIDE DRAWER */}
           <SideDrawer
-            setOpenAddNewAccountModal={setOpenAddNewAccountModal}
-            openAddNewAccountModal={openAddNewAccountModal}
             sidebarWidth={SIDEBAR_WIDTH}
             openSidebar={openSidebar}
             setOpenSideBar={setOpenSideBar}
-            openAssigneeTable={openAssigneeTable}
-            setOpenAssigneeTable={setOpenAssigneeTable}
           />
 
           {/* TABS */}

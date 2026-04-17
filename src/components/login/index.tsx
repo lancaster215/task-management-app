@@ -108,7 +108,7 @@ export default function Login() {
                                             onMouseUp={(e) => e.preventDefault()}
                                             edge="end"
                                         >
-                                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                                            {showPassword ? <Visibility /> : <VisibilityOff />}
                                         </IconButton>
                                     </InputAdornment>
                                 ),

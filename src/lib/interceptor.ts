@@ -5,7 +5,6 @@
  */
 
 import { BASE_URL } from "@/constants/baseURL";
-import { redirect } from "next/navigation";
 
 // Helper to store access token in memory instead of storing in localStorage
 let memoryToken: string | null = null;
@@ -17,6 +16,7 @@ export const setMemoryToken = (token: string | null) => {
 /**
  * The wrapper function that replaces your 'api' axios instance
  */
+let isRefreshing = false;
 export const api = async (endpoint: string, options: RequestInit = {}): Promise<Response> => {
     const url = `${BASE_URL}${endpoint}`;
 
@@ -45,6 +45,13 @@ export const api = async (endpoint: string, options: RequestInit = {}): Promise<
 
         // 2. Response "Interceptor" Logic (handling 401)
         if (response.status === 401) {
+            if (isRefreshing) {
+                // Optional: You could wait or just redirect
+                window.location.href = '/login';
+                return response;
+            }
+
+            isRefreshing = true;
             try {
                 // Attempt to refresh the token
                 const refreshResponse = await fetch(`${BASE_URL}/api/refresh`, {
@@ -56,6 +63,7 @@ export const api = async (endpoint: string, options: RequestInit = {}): Promise<
                 if (refreshResponse.ok) {
                     const data = await refreshResponse.json();
                     memoryToken = data.accessToken;
+                    isRefreshing = false;
 
                     // 3. Retry Logic
                     // Update the header with the new token and retry the original call
@@ -66,10 +74,11 @@ export const api = async (endpoint: string, options: RequestInit = {}): Promise<
                     throw new Error('Refresh failed');
                 }
             } catch (err) {
+                isRefreshing = false;
                 // Log user out if refresh fails
                 memoryToken = null;
                 if (typeof window !== 'undefined') {
-                    redirect('/login')
+                    window.location.href = '/login';
                 }
                 return response; // Return the original 401
             }

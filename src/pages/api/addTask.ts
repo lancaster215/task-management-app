@@ -1,5 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from '@/lib/prisma';
+import { parse } from "cookie";
+import jwt from 'jsonwebtoken';
+import { REFRESH_SECRET } from "./login";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
@@ -8,6 +11,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     const { title, description, status, priority, dueDate, tags, assigneeId } = req.body;
+    const cookies = parse(req.headers.cookie || '');
+    const refreshToken = cookies.refreshToken || 'undefined';
+
+    interface TokenPayloadType {
+      userId?: number,
+      iat?: number,
+      exp?: number
+    }
+
+    const decoded = jwt.verify(refreshToken, REFRESH_SECRET) as TokenPayloadType;
+
+    if (decoded.userId !== assigneeId) {
+      return res.status(403).json({ message: 'Forbidden: You cannot access other users tasks' });
+    }
 
     const newTask = await prisma.task.create({
       data: {

@@ -8,13 +8,9 @@ import { RootState } from '@/store';
 import { useLogout } from '@/hooks/api/authorization/useLogout';
 
 interface SideDrawerProps {
-    openAddNewAccountModal: boolean,
-    setOpenAddNewAccountModal: (open: boolean) => void,
     sidebarWidth: number,
     openSidebar: boolean,
     setOpenSideBar: (open: boolean) => void,
-    openAssigneeTable: boolean,
-    setOpenAssigneeTable: (open: boolean) => void,
 }
 
 const DrawerHeader = styled('div')(({ theme }) => ({
