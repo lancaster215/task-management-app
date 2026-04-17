@@ -1,4 +1,3 @@
-import { BASE_URL } from "@/constants/baseURL";
 import { RegisterFormData } from "@/components/register";
 
 export const handleRegister = async (formData: RegisterFormData) => {
@@ -9,7 +8,7 @@ export const handleRegister = async (formData: RegisterFormData) => {
         lastName: formData.lastName
     };
 
-    const response = await fetch(`${BASE_URL}/api/register`, {
+    const response = await fetch(`/api/register`, {
         method: 'POST',
         headers: { "Content-Type": 'application/json' },
         body: JSON.stringify(payload),

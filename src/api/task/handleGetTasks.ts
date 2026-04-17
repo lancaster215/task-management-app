@@ -4,6 +4,7 @@ export default async function handleGetTasks({ userId }: { userId: string }) {
     try {
         const tasksResponse = await api(`/api/task`, {
             method: 'POST',
+            credentials: "include",
             headers: {
                 "Content-Type": "application/json"
             },

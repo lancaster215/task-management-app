@@ -7,6 +7,7 @@ export type RemoveTaskVariables = {
 export default async function handleRemoveTask({ selected, finalUserId }: RemoveTaskVariables) {
     const response = await api(`/api/removeTask`, {
         method: 'POST',
+        credentials: "include",
         headers: {
             "Content-Type": 'application/json'
         },

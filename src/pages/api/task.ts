@@ -4,8 +4,15 @@ import { prisma } from '@/lib/prisma';
 import { parse } from "cookie";
 import jwt from 'jsonwebtoken';
 import { REFRESH_SECRET } from "./login";
+import { applyCors } from "./lib/cors";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+    applyCors(res, req);
+
+    if (req.method === "OPTIONS") {
+        return res.status(200).end();
+    }
+
     const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
 
     if (!isAllowed(String(ip), 5, 10000)) {

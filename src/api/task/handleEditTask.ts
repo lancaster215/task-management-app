@@ -9,6 +9,7 @@ export type EditTaskVariables = {
 export default async function handleEditTask({ formData, finalUserId }: EditTaskVariables) {
     const response = await api(`/api/editTask`, {
         method: "POST",
+        credentials: "include",
         headers: {
             "Content-Type": "application/json"
         },

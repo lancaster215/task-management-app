@@ -1,4 +1,3 @@
-import { BASE_URL } from "@/constants/baseURL";
 import { LoginFormData } from "@/components/login";
 
 export const handleLogin = async (formData: LoginFormData) => {
@@ -7,7 +6,7 @@ export const handleLogin = async (formData: LoginFormData) => {
         password: formData.password,
     };
 
-    const response = await fetch(`${BASE_URL}/api/login`, {
+    const response = await fetch(`/api/login`, {
         method: 'POST',
         headers: { "Content-Type": 'application/json' },
         body: JSON.stringify(payload),

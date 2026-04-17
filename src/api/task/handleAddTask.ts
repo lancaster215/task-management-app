@@ -9,6 +9,7 @@ export type AddTaskVariables = {
 export default async function handleAddTask({ formData, finalUserId }: AddTaskVariables) {
     const response = await api(`/api/addTask`, {
         method: 'POST',
+        credentials: "include",
         headers: {
             "Content-Type": 'application/json'
         },
